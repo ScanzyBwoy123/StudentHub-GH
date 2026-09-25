@@ -1436,7 +1436,7 @@ currentQuizSubject = subject;
     if (subject !== "All Subjects") {
         questions = questions.filter(
             question =>
-                question.subject === subject
+                question.course === subject
         );
     }
 
