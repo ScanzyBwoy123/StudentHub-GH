@@ -1,1245 +1,456 @@
-/* =========================================
-   StudentHub GH
-   Main Application
-========================================= */
+// =========================================
+// STUDENTHUB GH — MAIN APP
+// =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    /* =========================================
-       Navigation
-    ========================================= */
+    // =========================================
+    // STORAGE KEYS
+    // =========================================
+
+    const COURSE_KEY = "studenthub_courses";
+    const ASSIGNMENT_KEY = "studenthub_assignments";
+    const TIMETABLE_KEY = "studenthub_timetable";
+    const GPA_KEY = "studenthub_gpa";
+
+    // =========================================
+    // BASIC HELPERS
+    // =========================================
+
+    function getData(key) {
+        return JSON.parse(localStorage.getItem(key)) || [];
+    }
+
+    function saveData(key, data) {
+        localStorage.setItem(key, JSON.stringify(data));
+    }
+
+    function escapeHTML(value) {
+        return String(value || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    // =========================================
+    // NAVIGATION
+    // =========================================
 
     const navItems = document.querySelectorAll("[data-page]");
     const pages = document.querySelectorAll(".page");
 
-    function openPage(pageId) {
-
-        pages.forEach((page) => {
-            page.classList.remove("active");
-        });
-
-        navItems.forEach((item) => {
-            item.classList.remove("active");
-        });
-
-        const selectedPage = document.getElementById(pageId);
-
-        if (selectedPage) {
-            selectedPage.classList.add("active");
-        }
-
-        document
-            .querySelectorAll(`[data-page="${pageId}"]`)
-            .forEach((item) => {
-                item.classList.add("active");
-            });
-
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
-    }
-
-    navItems.forEach((item) => {
-
+    navItems.forEach(item => {
         item.addEventListener("click", () => {
 
-            const pageId = item.dataset.page;
+            const pageName = item.dataset.page;
 
-            if (pageId) {
-                openPage(pageId);
-            }
-
-        });
-
-    });
-
-
-    /* =========================================
-       Current Date
-    ========================================= */
-
-    const currentDateElement =
-        document.getElementById("currentDate");
-
-    if (currentDateElement) {
-
-        const today = new Date();
-
-        const formattedDate =
-            today.toLocaleDateString("en-GH", {
-                weekday: "long",
-                day: "numeric",
-                month: "short",
-                year: "numeric"
+            pages.forEach(page => {
+                page.classList.remove("active");
             });
 
-        currentDateElement.textContent = formattedDate;
+            navItems.forEach(nav => {
+                nav.classList.remove("active");
+            });
+
+            const targetPage = document.getElementById(pageName);
+
+            if (targetPage) {
+                targetPage.classList.add("active");
+            }
+
+            item.classList.add("active");
+
+            if (pageName === "courses") {
+                renderCourses();
+            }
+
+            if (pageName === "assignments") {
+                renderAssignments();
+            }
+
+            if (pageName === "timetable") {
+                renderTimetable();
+            }
+
+            if (pageName === "gpa") {
+                renderGPA();
+            }
+        });
+    });
+
+    // =========================================
+    // DATE
+    // =========================================
+
+    const dateElement = document.getElementById("currentDate");
+
+    if (dateElement) {
+        dateElement.textContent = new Date().toLocaleDateString(
+            "en-GH",
+            {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric"
+            }
+        );
     }
 
+    // =========================================
+    // GREETING
+    // =========================================
 
-    /* =========================================
-       Welcome Message
-    ========================================= */
+    const greetingElement = document.getElementById("greeting");
 
-    const welcomeHeading =
-        document.querySelector(".welcome h2");
-
-    if (welcomeHeading) {
+    if (greetingElement) {
 
         const hour = new Date().getHours();
 
-        let greeting = "Welcome back";
+        let greeting = "Good evening";
 
         if (hour < 12) {
             greeting = "Good morning";
         } else if (hour < 18) {
             greeting = "Good afternoon";
-        } else {
-            greeting = "Good evening";
         }
 
-        welcomeHeading.textContent =
+        greetingElement.textContent =
             `${greeting}, Hacker Pro! 👋`;
     }
 
-
-    /* =========================================
-       Notification Button
-    ========================================= */
+    // =========================================
+    // NOTIFICATION
+    // =========================================
 
     const notificationButton =
-        document.querySelector(".notification-btn");
+        document.querySelector(".notification-pulse");
 
     if (notificationButton) {
-
         notificationButton.addEventListener("click", () => {
-
-            alert(
-                "You don't have any new notifications yet."
-            );
-
+            alert("You're all caught up! 🎉");
         });
-
     }
 
-
-    /* =========================================
-       Storage
-       -----------------------------------------
-       Everything currently uses localStorage.
-       No database or paid service required.
-    ========================================= */
-
-    const COURSE_STORAGE_KEY =
-        "studenthub_courses";
-
-    const ASSIGNMENT_STORAGE_KEY =
-        "studenthub_assignments";
-
-    const TIMETABLE_STORAGE_KEY =
-        "studenthub_timetable";
-
-
-    /* =========================================
-       Generic Storage Helpers
-    ========================================= */
-
-    function getStoredData(key) {
-
-        const savedData =
-            localStorage.getItem(key);
-
-        if (!savedData) {
-            return [];
-        }
-
-        try {
-
-            const parsedData =
-                JSON.parse(savedData);
-
-            return Array.isArray(parsedData)
-                ? parsedData
-                : [];
-
-        } catch (error) {
-
-            return [];
-
-        }
-    }
-
-
-    function saveStoredData(key, data) {
-
-        localStorage.setItem(
-            key,
-            JSON.stringify(data)
-        );
-
-    }
-
-
-    /* =========================================
-       Courses
-    ========================================= */
-
-    function getCourses() {
-
-        return getStoredData(
-            COURSE_STORAGE_KEY
-        );
-
-    }
-
-
-    function saveCourses(courses) {
-
-        saveStoredData(
-            COURSE_STORAGE_KEY,
-            courses
-        );
-
-    }
-
-
-    const coursesPage =
-        document.getElementById("courses");
-
-
-    if (coursesPage) {
-
-        coursesPage.innerHTML = `
-
-            <div class="page-heading">
-
-                <span class="eyebrow">
-                    ACADEMICS
-                </span>
-
-                <h2>
-                    My Courses
-                </h2>
-
-                <p>
-                    Manage the courses and subjects you are studying.
-                </p>
-
-            </div>
-
-
-            <div class="course-toolbar">
-
-                <div>
-
-                    <strong id="courseCount">
-                        0 Courses
-                    </strong>
-
-                    <span>
-                        in your workspace
-                    </span>
-
-                </div>
-
-
-                <button
-                    class="primary-button"
-                    id="addCourseButton"
-                    type="button"
-                >
-                    + Add Course
-                </button>
-
-            </div>
-
-
-            <div
-                class="courses-grid"
-                id="coursesGrid"
-            ></div>
-
-
-            <div
-                class="empty-page"
-                id="coursesEmpty"
-            >
-
-                <div class="large-icon">
-                    📚
-                </div>
-
-                <h3>
-                    No courses yet
-                </h3>
-
-                <p>
-                    Add your first course to start building your academic workspace.
-                </p>
-
-                <button
-                    class="primary-button"
-                    id="emptyAddCourseButton"
-                    type="button"
-                >
-                    + Add Course
-                </button>
-
-            </div>
-
-        `;
-
-    }
-
-
-    const coursesGrid =
-        document.getElementById("coursesGrid");
-
-    const coursesEmpty =
-        document.getElementById("coursesEmpty");
-
-    const courseCount =
-        document.getElementById("courseCount");
-
-    const addCourseButton =
-        document.getElementById("addCourseButton");
-
-    const emptyAddCourseButton =
-        document.getElementById("emptyAddCourseButton");
-
+    // =========================================
+    // COURSES
+    // =========================================
 
     function renderCourses() {
 
-        if (!coursesGrid) {
-            return;
-        }
+        const container = document.getElementById("courses");
 
-        const courses =
-            getCourses();
+        if (!container) return;
 
-        coursesGrid.innerHTML = "";
+        const courses = getData(COURSE_KEY);
 
-
-        if (courseCount) {
-
-            courseCount.textContent =
-                `${courses.length} ${
-                    courses.length === 1
-                        ? "Course"
-                        : "Courses"
-                }`;
-
-        }
-
-
-        if (courses.length === 0) {
-
-            coursesGrid.style.display = "none";
-
-            if (coursesEmpty) {
-                coursesEmpty.style.display = "flex";
-            }
-
-            return;
-
-        }
-
-
-        coursesGrid.style.display = "grid";
-
-
-        if (coursesEmpty) {
-            coursesEmpty.style.display = "none";
-        }
-
-
-        courses.forEach((course, index) => {
-
-            const card =
-                document.createElement("div");
-
-            card.className =
-                "course-card";
-
-
-            card.innerHTML = `
-
-                <div class="course-icon">
-                    📚
+        container.innerHTML = `
+            <div class="page-header">
+                <div>
+                    <h2>My Courses</h2>
+                    <p>Manage your courses and subjects.</p>
                 </div>
 
-
-                <div class="course-content">
-
-                    <span class="course-code">
-                        ${escapeHTML(course.code)}
-                    </span>
-
-
-                    <h3>
-                        ${escapeHTML(course.name)}
-                    </h3>
-
-
-                    <p>
-                        ${escapeHTML(
-                            course.description ||
-                            "No description added."
-                        )}
-                    </p>
-
-                </div>
-
-
-                <button
-                    class="delete-course"
-                    data-index="${index}"
-                    title="Delete course"
-                    type="button"
-                >
-                    ×
+                <button class="primary-btn" id="addCourseBtn">
+                    + Add Course
                 </button>
+            </div>
 
-            `;
+            <div class="content-grid">
 
+                ${
+                    courses.length === 0
+                    ?
+                    `
+                    <div class="empty-state">
+                        <h3>No courses yet</h3>
+                        <p>Add your first course to get started.</p>
+                    </div>
+                    `
+                    :
+                    courses.map((course, index) => `
+                        <div class="dashboard-card">
+                            <h3>${escapeHTML(course.name)}</h3>
 
-            coursesGrid.appendChild(card);
+                            <p>
+                                <strong>Code:</strong>
+                                ${escapeHTML(course.code)}
+                            </p>
 
-        });
+                            <p>
+                                ${escapeHTML(course.description)}
+                            </p>
 
+                            <button
+                                class="delete-course"
+                                data-index="${index}">
+                                Delete
+                            </button>
+                        </div>
+                    `).join("")
+                }
 
-        document
-            .querySelectorAll(".delete-course")
-            .forEach((button) => {
+            </div>
+        `;
 
-                button.addEventListener(
-                    "click",
-                    () => {
+        const addButton =
+            document.getElementById("addCourseBtn");
 
-                        const index =
-                            Number(
-                                button.dataset.index
-                            );
+        if (addButton) {
+            addButton.addEventListener("click", addCourse);
+        }
 
-                        deleteCourse(index);
+        document.querySelectorAll(".delete-course")
+            .forEach(button => {
 
-                    }
-                );
+                button.addEventListener("click", () => {
 
+                    const index =
+                        Number(button.dataset.index);
+
+                    const courses = getData(COURSE_KEY);
+
+                    courses.splice(index, 1);
+
+                    saveData(COURSE_KEY, courses);
+
+                    renderCourses();
+                    updateDashboardStats();
+                });
             });
-
     }
-
 
     function addCourse() {
 
-        const name =
-            prompt(
-                "Enter the course or subject name:"
-            );
+        const name = prompt("Course name:");
 
+        if (!name) return;
 
-        if (!name || !name.trim()) {
-            return;
-        }
+        const code = prompt("Course code:");
 
-
-        const code =
-            prompt(
-                "Enter the course code (optional):"
-            );
-
+        if (!code) return;
 
         const description =
-            prompt(
-                "Add a short description (optional):"
-            );
+            prompt("Short course description:") || "";
 
-
-        const courses =
-            getCourses();
-
+        const courses = getData(COURSE_KEY);
 
         courses.push({
-
-            name:
-                name.trim(),
-
-            code:
-                code && code.trim()
-                    ? code.trim().toUpperCase()
-                    : "COURSE",
-
-            description:
-                description
-                    ? description.trim()
-                    : ""
-
+            name,
+            code,
+            description
         });
 
-
-        saveCourses(courses);
-
-        renderCourses();
-
-        updateDashboardStats();
-
-    }
-
-
-    function deleteCourse(index) {
-
-        const courses =
-            getCourses();
-
-
-        if (!courses[index]) {
-            return;
-        }
-
-
-        const confirmed =
-            confirm(
-                `Remove "${courses[index].name}" from your courses?`
-            );
-
-
-        if (!confirmed) {
-            return;
-        }
-
-
-        courses.splice(index, 1);
-
-        saveCourses(courses);
+        saveData(COURSE_KEY, courses);
 
         renderCourses();
-
         updateDashboardStats();
-
     }
 
-
-    if (addCourseButton) {
-
-        addCourseButton.addEventListener(
-            "click",
-            addCourse
-        );
-
-    }
-
-
-    if (emptyAddCourseButton) {
-
-        emptyAddCourseButton.addEventListener(
-            "click",
-            addCourse
-        );
-
-    }
-
-
-    /* =========================================
-       Assignments
-    ========================================= */
-
-    function getAssignments() {
-
-        return getStoredData(
-            ASSIGNMENT_STORAGE_KEY
-        );
-
-    }
-
-
-    function saveAssignments(assignments) {
-
-        saveStoredData(
-            ASSIGNMENT_STORAGE_KEY,
-            assignments
-        );
-
-    }
-
-
-    const assignmentsPage =
-        document.getElementById("assignments");
-
-
-    if (assignmentsPage) {
-
-        assignmentsPage.innerHTML = `
-
-            <div class="page-heading">
-
-                <span class="eyebrow">
-                    ACADEMICS
-                </span>
-
-                <h2>
-                    My Assignments
-                </h2>
-
-                <p>
-                    Keep track of assignments, deadlines and completed work.
-                </p>
-
-            </div>
-
-
-            <div class="course-toolbar">
-
-                <div>
-
-                    <strong id="assignmentCount">
-                        0 Assignments
-                    </strong>
-
-                    <span>
-                        in your workspace
-                    </span>
-
-                </div>
-
-
-                <button
-                    class="primary-button"
-                    id="addAssignmentButton"
-                    type="button"
-                >
-                    + Add Assignment
-                </button>
-
-            </div>
-
-
-            <div
-                class="assignments-list"
-                id="assignmentsList"
-            ></div>
-
-
-            <div
-                class="empty-page"
-                id="assignmentsEmpty"
-            >
-
-                <div class="large-icon">
-                    📝
-                </div>
-
-                <h3>
-                    No assignments yet
-                </h3>
-
-                <p>
-                    Add your first assignment to start tracking your academic work.
-                </p>
-
-                <button
-                    class="primary-button"
-                    id="emptyAddAssignmentButton"
-                    type="button"
-                >
-                    + Add Assignment
-                </button>
-
-            </div>
-
-        `;
-
-    }
-
-
-    const assignmentsList =
-        document.getElementById("assignmentsList");
-
-    const assignmentsEmpty =
-        document.getElementById("assignmentsEmpty");
-
-    const assignmentCount =
-        document.getElementById("assignmentCount");
-
-    const addAssignmentButton =
-        document.getElementById(
-            "addAssignmentButton"
-        );
-
-    const emptyAddAssignmentButton =
-        document.getElementById(
-            "emptyAddAssignmentButton"
-        );
-
+    // =========================================
+    // ASSIGNMENTS
+    // =========================================
 
     function renderAssignments() {
 
-        if (!assignmentsList) {
-            return;
-        }
+        const container =
+            document.getElementById("assignments");
 
+        if (!container) return;
 
         const assignments =
-            getAssignments();
+            getData(ASSIGNMENT_KEY);
 
+        container.innerHTML = `
+            <div class="page-header">
+                <div>
+                    <h2>Assignments</h2>
+                    <p>Keep track of your academic work.</p>
+                </div>
 
-        assignmentsList.innerHTML = "";
+                <button class="primary-btn" id="addAssignmentBtn">
+                    + Add Assignment
+                </button>
+            </div>
 
+            <div class="content-grid">
 
-        if (assignmentCount) {
-
-            assignmentCount.textContent =
-                `${assignments.length} ${
-                    assignments.length === 1
-                        ? "Assignment"
-                        : "Assignments"
-                }`;
-
-        }
-
-
-        if (assignments.length === 0) {
-
-            assignmentsList.style.display =
-                "none";
-
-
-            if (assignmentsEmpty) {
-
-                assignmentsEmpty.style.display =
-                    "flex";
-
-            }
-
-            return;
-
-        }
-
-
-        assignmentsList.style.display =
-            "grid";
-
-
-        if (assignmentsEmpty) {
-
-            assignmentsEmpty.style.display =
-                "none";
-
-        }
-
-
-        assignments.forEach(
-            (assignment, index) => {
-
-                const card =
-                    document.createElement("div");
-
-
-                card.className =
-                    "assignment-card";
-
-
-                const status =
-                    assignment.completed
-                        ? "Completed"
-                        : "Pending";
-
-
-                card.innerHTML = `
-
-                    <div class="assignment-main">
-
-                        <div class="assignment-icon">
-                            📝
-                        </div>
-
-
-                        <div>
-
-                            <span class="assignment-course">
-                                ${escapeHTML(
-                                    assignment.course ||
-                                    "General"
-                                )}
-                            </span>
-
+                ${
+                    assignments.length === 0
+                    ?
+                    `
+                    <div class="empty-state">
+                        <h3>No assignments yet</h3>
+                        <p>Add an assignment to start tracking your work.</p>
+                    </div>
+                    `
+                    :
+                    assignments.map((assignment, index) => `
+                        <div class="dashboard-card">
 
                             <h3>
-                                ${escapeHTML(
-                                    assignment.title
-                                )}
+                                ${escapeHTML(assignment.title)}
                             </h3>
 
-
                             <p>
-                                ${escapeHTML(
-                                    assignment.description ||
-                                    "No description added."
-                                )}
+                                <strong>Course:</strong>
+                                ${escapeHTML(assignment.course)}
                             </p>
 
+                            <p>
+                                <strong>Due:</strong>
+                                ${escapeHTML(assignment.dueDate)}
+                            </p>
 
-                            <small>
-                                Due:
-                                ${escapeHTML(
-                                    assignment.dueDate ||
-                                    "No date"
-                                )}
-                            </small>
+                            <p>
+                                ${escapeHTML(assignment.description)}
+                            </p>
+
+                            <p>
+                                <strong>Status:</strong>
+                                ${assignment.completed
+                                    ? "Completed ✅"
+                                    : "Pending ⏳"
+                                }
+                            </p>
+
+                            <button
+                                class="complete-assignment"
+                                data-index="${index}">
+                                ${
+                                    assignment.completed
+                                    ? "Mark Pending"
+                                    : "Mark Completed"
+                                }
+                            </button>
+
+                            <button
+                                class="delete-assignment"
+                                data-index="${index}">
+                                Delete
+                            </button>
 
                         </div>
+                    `).join("")
+                }
 
-                    </div>
+            </div>
+        `;
 
+        const addButton =
+            document.getElementById("addAssignmentBtn");
 
-                    <div class="assignment-actions">
+        if (addButton) {
+            addButton.addEventListener(
+                "click",
+                addAssignment
+            );
+        }
 
-                        <span
-                            class="assignment-status ${
-                                assignment.completed
-                                    ? "completed"
-                                    : "pending"
-                            }"
-                        >
-                            ${status}
-                        </span>
+        document.querySelectorAll(".complete-assignment")
+            .forEach(button => {
 
+                button.addEventListener("click", () => {
 
-                        <button
-                            class="complete-assignment"
-                            data-index="${index}"
-                            type="button"
-                        >
-                            ${
-                                assignment.completed
-                                    ? "Mark Pending"
-                                    : "Mark Complete"
-                            }
-                        </button>
+                    const index =
+                        Number(button.dataset.index);
 
+                    const assignments =
+                        getData(ASSIGNMENT_KEY);
 
-                        <button
-                            class="delete-assignment"
-                            data-index="${index}"
-                            type="button"
-                            title="Delete assignment"
-                        >
-                            ×
-                        </button>
+                    assignments[index].completed =
+                        !assignments[index].completed;
 
-                    </div>
+                    saveData(
+                        ASSIGNMENT_KEY,
+                        assignments
+                    );
 
-                `;
-
-
-                assignmentsList.appendChild(card);
-
-            }
-        );
-
-
-        document
-            .querySelectorAll(
-                ".complete-assignment"
-            )
-            .forEach((button) => {
-
-                button.addEventListener(
-                    "click",
-                    () => {
-
-                        const index =
-                            Number(
-                                button.dataset.index
-                            );
-
-                        toggleAssignment(
-                            index
-                        );
-
-                    }
-                );
-
+                    renderAssignments();
+                    updateDashboardStats();
+                });
             });
 
+        document.querySelectorAll(".delete-assignment")
+            .forEach(button => {
 
-        document
-            .querySelectorAll(
-                ".delete-assignment"
-            )
-            .forEach((button) => {
+                button.addEventListener("click", () => {
 
-                button.addEventListener(
-                    "click",
-                    () => {
+                    const index =
+                        Number(button.dataset.index);
 
-                        const index =
-                            Number(
-                                button.dataset.index
-                            );
+                    const assignments =
+                        getData(ASSIGNMENT_KEY);
 
-                        deleteAssignment(
-                            index
-                        );
+                    assignments.splice(index, 1);
 
-                    }
-                );
+                    saveData(
+                        ASSIGNMENT_KEY,
+                        assignments
+                    );
 
+                    renderAssignments();
+                    updateDashboardStats();
+                });
             });
-
     }
-
 
     function addAssignment() {
 
         const title =
-            prompt(
-                "Enter the assignment title:"
-            );
+            prompt("Assignment title:");
 
-
-        if (!title || !title.trim()) {
-            return;
-        }
-
+        if (!title) return;
 
         const course =
-            prompt(
-                "Enter the course or subject:"
-            );
+            prompt("Course:");
 
+        if (!course) return;
 
         const dueDate =
-            prompt(
-                "Enter the due date (example: 30 Sep 2026):"
-            );
+            prompt("Due date:");
 
+        if (!dueDate) return;
 
         const description =
-            prompt(
-                "Add a short description (optional):"
-            );
-
+            prompt("Description:") || "";
 
         const assignments =
-            getAssignments();
-
+            getData(ASSIGNMENT_KEY);
 
         assignments.push({
-
-            title:
-                title.trim(),
-
-            course:
-                course && course.trim()
-                    ? course.trim()
-                    : "General",
-
-            dueDate:
-                dueDate && dueDate.trim()
-                    ? dueDate.trim()
-                    : "No date",
-
-            description:
-                description
-                    ? description.trim()
-                    : "",
-
-            completed:
-                false
-
+            title,
+            course,
+            dueDate,
+            description,
+            completed: false
         });
 
-
-        saveAssignments(
+        saveData(
+            ASSIGNMENT_KEY,
             assignments
         );
 
-
         renderAssignments();
-
         updateDashboardStats();
-
     }
 
-
-    function toggleAssignment(index) {
-
-        const assignments =
-            getAssignments();
-
-
-        if (!assignments[index]) {
-            return;
-        }
-
-
-        assignments[index].completed =
-            !assignments[index].completed;
-
-
-        saveAssignments(
-            assignments
-        );
-
-
-        renderAssignments();
-
-        updateDashboardStats();
-
-    }
-
-
-    function deleteAssignment(index) {
-
-        const assignments =
-            getAssignments();
-
-
-        if (!assignments[index]) {
-            return;
-        }
-
-
-        const confirmed =
-            confirm(
-                `Delete "${assignments[index].title}"?`
-            );
-
-
-        if (!confirmed) {
-            return;
-        }
-
-
-        assignments.splice(
-            index,
-            1
-        );
-
-
-        saveAssignments(
-            assignments
-        );
-
-
-        renderAssignments();
-
-        updateDashboardStats();
-
-    }
-
-
-    if (addAssignmentButton) {
-
-        addAssignmentButton.addEventListener(
-            "click",
-            addAssignment
-        );
-
-    }
-
-
-    if (emptyAddAssignmentButton) {
-
-        emptyAddAssignmentButton.addEventListener(
-            "click",
-            addAssignment
-        );
-
-    }
-
-
-    /* =========================================
-       Timetable
-    ========================================= */
-
-    const timetablePage =
-        document.getElementById("timetable");
-
-
-    if (timetablePage) {
-
-        timetablePage.innerHTML = `
-
-            <div class="page-heading">
-
-                <span class="eyebrow">
-                    ACADEMICS
-                </span>
-
-                <h2>
-                    My Timetable
-                </h2>
-
-                <p>
-                    Organize your weekly classes, lectures and study periods.
-                </p>
-
-            </div>
-
-
-            <div class="course-toolbar">
-
-                <div>
-
-                    <strong id="timetableCount">
-                        0 Classes
-                    </strong>
-
-                    <span>
-                        in your weekly schedule
-                    </span>
-
-                </div>
-
-
-                <button
-                    class="primary-button"
-                    id="addTimetableButton"
-                    type="button"
-                >
-                    + Add Class
-                </button>
-
-            </div>
-
-
-            <div
-                class="timetable-list"
-                id="timetableList"
-            ></div>
-
-
-            <div
-                class="empty-page"
-                id="timetableEmpty"
-            >
-
-                <div class="large-icon">
-                    🗓️
-                </div>
-
-                <h3>
-                    No classes yet
-                </h3>
-
-                <p>
-                    Add your first class to build your weekly timetable.
-                </p>
-
-                <button
-                    class="primary-button"
-                    id="emptyAddTimetableButton"
-                    type="button"
-                >
-                    + Add Class
-                </button>
-
-            </div>
-
-        `;
-
-    }
-
-
-    const timetableList =
-        document.getElementById("timetableList");
-
-    const timetableEmpty =
-        document.getElementById("timetableEmpty");
-
-    const timetableCount =
-        document.getElementById("timetableCount");
-
-    const addTimetableButton =
-        document.getElementById(
-            "addTimetableButton"
-        );
-
-    const emptyAddTimetableButton =
-        document.getElementById(
-            "emptyAddTimetableButton"
-        );
-
-
-    function getTimetable() {
-
-        return getStoredData(
-            TIMETABLE_STORAGE_KEY
-        );
-
-    }
-
-
-    function saveTimetable(timetable) {
-
-        saveStoredData(
-            TIMETABLE_STORAGE_KEY,
-            timetable
-        );
-
-    }
-
+    // =========================================
+    // TIMETABLE
+    // =========================================
 
     function renderTimetable() {
 
-        if (!timetableList) {
-            return;
-        }
+        const container =
+            document.getElementById("timetable");
 
+        if (!container) return;
 
         const timetable =
-            getTimetable();
+            getData(TIMETABLE_KEY);
 
-
-        timetableList.innerHTML = "";
-
-
-        if (timetableCount) {
-
-            timetableCount.textContent =
-                `${timetable.length} ${
-                    timetable.length === 1
-                        ? "Class"
-                        : "Classes"
-                }`;
-
-        }
-
-
-        if (timetable.length === 0) {
-
-            timetableList.style.display =
-                "none";
-
-
-            if (timetableEmpty) {
-
-                timetableEmpty.style.display =
-                    "flex";
-
-            }
-
-            return;
-
-        }
-
-
-        timetableList.style.display =
-            "grid";
-
-
-        if (timetableEmpty) {
-
-            timetableEmpty.style.display =
-                "none";
-
-        }
-
-
-        const dayOrder = [
+        const days = [
             "Monday",
             "Tuesday",
             "Wednesday",
@@ -1249,232 +460,169 @@ document.addEventListener("DOMContentLoaded", () => {
             "Sunday"
         ];
 
+        container.innerHTML = `
+            <div class="page-header">
 
-        timetable.sort((a, b) => {
-
-            const dayA =
-                dayOrder.indexOf(a.day);
-
-            const dayB =
-                dayOrder.indexOf(b.day);
-
-
-            if (dayA !== dayB) {
-                return dayA - dayB;
-            }
-
-
-            return String(
-                a.startTime
-            ).localeCompare(
-                String(b.startTime)
-            );
-
-        });
-
-
-        dayOrder.forEach((day) => {
-
-            const dayClasses =
-                timetable.filter(
-                    (item) => item.day === day
-                );
-
-
-            if (dayClasses.length === 0) {
-                return;
-            }
-
-
-            const daySection =
-                document.createElement("div");
-
-
-            daySection.className =
-                "timetable-day";
-
-
-            daySection.innerHTML = `
-
-                <div class="timetable-day-header">
-
-                    <h3>
-                        ${day}
-                    </h3>
-
-                    <span>
-                        ${dayClasses.length}
-                        ${
-                            dayClasses.length === 1
-                                ? "class"
-                                : "classes"
-                        }
-                    </span>
-
+                <div>
+                    <h2>My Timetable</h2>
+                    <p>Organize your weekly classes.</p>
                 </div>
 
+                <button class="primary-btn" id="addClassBtn">
+                    + Add Class
+                </button>
 
-                <div class="timetable-day-classes"></div>
+            </div>
 
-            `;
+            <div class="timetable-list">
 
-
-            const classContainer =
-                daySection.querySelector(
-                    ".timetable-day-classes"
-                );
-
-
-            dayClasses.forEach((entry) => {
-
-                const originalIndex =
-                    timetable.indexOf(entry);
-
-
-                const classCard =
-                    document.createElement("div");
-
-
-                classCard.className =
-                    "timetable-entry";
-
-
-                classCard.innerHTML = `
-
-                    <div class="timetable-time">
-
-                        <strong>
-                            ${escapeHTML(
-                                entry.startTime
-                            )}
-                        </strong>
-
-                        <span>
-                            to
-                        </span>
-
-                        <strong>
-                            ${escapeHTML(
-                                entry.endTime
-                            )}
-                        </strong>
-
+                ${
+                    timetable.length === 0
+                    ?
+                    `
+                    <div class="empty-state">
+                        <h3>No classes yet</h3>
+                        <p>Add your first class to build your timetable.</p>
                     </div>
+                    `
+                    :
+                    days.map(day => {
 
-
-                    <div class="timetable-details">
-
-                        <span class="timetable-course">
-                            ${escapeHTML(
-                                entry.course
-                            )}
-                        </span>
-
-
-                        <h4>
-                            ${escapeHTML(
-                                entry.lecturer ||
-                                "Class Session"
-                            )}
-                        </h4>
-
-
-                        <p>
-                            📍
-                            ${escapeHTML(
-                                entry.room ||
-                                "Location not added"
-                            )}
-                        </p>
-
-                    </div>
-
-
-                    <button
-                        class="delete-timetable"
-                        data-index="${originalIndex}"
-                        type="button"
-                        title="Delete class"
-                    >
-                        ×
-                    </button>
-
-                `;
-
-
-                classContainer.appendChild(
-                    classCard
-                );
-
-            });
-
-
-            timetableList.appendChild(
-                daySection
-            );
-
-        });
-
-
-        document
-            .querySelectorAll(
-                ".delete-timetable"
-            )
-            .forEach((button) => {
-
-                button.addEventListener(
-                    "click",
-                    () => {
-
-                        const index =
-                            Number(
-                                button.dataset.index
+                        const classes =
+                            timetable
+                            .map((item, index) => ({
+                                ...item,
+                                index
+                            }))
+                            .filter(item => item.day === day)
+                            .sort((a, b) =>
+                                a.startTime.localeCompare(
+                                    b.startTime
+                                )
                             );
 
-                        deleteTimetable(
-                            index
-                        );
+                        if (classes.length === 0) {
+                            return "";
+                        }
 
-                    }
-                );
+                        return `
+                            <div class="timetable-day">
 
+                                <div class="timetable-day-header">
+                                    <h3>${day}</h3>
+                                    <span>
+                                        ${classes.length}
+                                        class
+                                        ${classes.length === 1 ? "" : "es"}
+                                    </span>
+                                </div>
+
+                                <div class="timetable-day-classes">
+
+                                    ${classes.map(item => `
+                                        <div class="timetable-entry">
+
+                                            <div class="timetable-time">
+                                                <strong>
+                                                    ${escapeHTML(item.startTime)}
+                                                </strong>
+
+                                                <span>
+                                                    to
+                                                    ${escapeHTML(item.endTime)}
+                                                </span>
+                                            </div>
+
+                                            <div class="timetable-details">
+
+                                                <span class="timetable-course">
+                                                    ${escapeHTML(item.course)}
+                                                </span>
+
+                                                <h4>
+                                                    ${escapeHTML(item.course)}
+                                                </h4>
+
+                                                <p>
+                                                    ${
+                                                        item.room
+                                                        ? `Room: ${escapeHTML(item.room)}`
+                                                        : ""
+                                                    }
+
+                                                    ${
+                                                        item.lecturer
+                                                        ? ` • ${escapeHTML(item.lecturer)}`
+                                                        : ""
+                                                    }
+                                                </p>
+
+                                            </div>
+
+                                            <button
+                                                class="delete-timetable"
+                                                data-index="${item.index}">
+                                                ×
+                                            </button>
+
+                                        </div>
+                                    `).join("")}
+
+                                </div>
+                            </div>
+                        `;
+                    }).join("")
+                }
+
+            </div>
+        `;
+
+        const addButton =
+            document.getElementById("addClassBtn");
+
+        if (addButton) {
+            addButton.addEventListener(
+                "click",
+                addTimetableClass
+            );
+        }
+
+        document.querySelectorAll(".delete-timetable")
+            .forEach(button => {
+
+                button.addEventListener("click", () => {
+
+                    const index =
+                        Number(button.dataset.index);
+
+                    const timetable =
+                        getData(TIMETABLE_KEY);
+
+                    timetable.splice(index, 1);
+
+                    saveData(
+                        TIMETABLE_KEY,
+                        timetable
+                    );
+
+                    renderTimetable();
+                });
             });
-
     }
-
 
     function addTimetableClass() {
 
         const course =
-            prompt(
-                "Enter the course or subject:"
-            );
+            prompt("Course name:");
 
-
-        if (!course || !course.trim()) {
-            return;
-        }
-
+        if (!course) return;
 
         const day =
             prompt(
-                "Enter the day (Monday-Sunday):"
+                "Day (Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday):"
             );
 
-
-        if (!day || !day.trim()) {
-            return;
-        }
-
-
-        const normalizedDay =
-            day.trim()
-                .charAt(0)
-                .toUpperCase() +
-            day.trim()
-                .slice(1)
-                .toLowerCase();
-
+        if (!day) return;
 
         const validDays = [
             "Monday",
@@ -1486,260 +634,377 @@ document.addEventListener("DOMContentLoaded", () => {
             "Sunday"
         ];
 
-
-        if (!validDays.includes(normalizedDay)) {
-
-            alert(
-                "Please enter a valid day from Monday to Sunday."
+        const formattedDay =
+            validDays.find(
+                d => d.toLowerCase() === day.toLowerCase()
             );
 
+        if (!formattedDay) {
+            alert("Please enter a valid day.");
             return;
-
         }
-
 
         const startTime =
-            prompt(
-                "Enter the start time (example: 08:00):"
-            );
+            prompt("Start time (e.g. 08:00):");
 
-
-        if (!startTime || !startTime.trim()) {
-            return;
-        }
-
+        if (!startTime) return;
 
         const endTime =
-            prompt(
-                "Enter the end time (example: 10:00):"
-            );
+            prompt("End time (e.g. 10:00):");
 
-
-        if (!endTime || !endTime.trim()) {
-            return;
-        }
-
+        if (!endTime) return;
 
         const room =
-            prompt(
-                "Enter the classroom/location (optional):"
-            );
-
+            prompt("Room:");
 
         const lecturer =
-            prompt(
-                "Enter the lecturer name (optional):"
-            );
-
+            prompt("Lecturer:");
 
         const timetable =
-            getTimetable();
-
+            getData(TIMETABLE_KEY);
 
         timetable.push({
-
-            course:
-                course.trim(),
-
-            day:
-                normalizedDay,
-
-            startTime:
-                startTime.trim(),
-
-            endTime:
-                endTime.trim(),
-
-            room:
-                room && room.trim()
-                    ? room.trim()
-                    : "",
-
-            lecturer:
-                lecturer && lecturer.trim()
-                    ? lecturer.trim()
-                    : ""
-
+            course,
+            day: formattedDay,
+            startTime,
+            endTime,
+            room: room || "",
+            lecturer: lecturer || ""
         });
 
-
-        saveTimetable(
+        saveData(
+            TIMETABLE_KEY,
             timetable
         );
 
-
         renderTimetable();
-
     }
 
+    // =========================================
+    // GPA / CGPA
+    // =========================================
 
-    function deleteTimetable(index) {
+    const gradePoints = {
+        "A": 4.0,
+        "B+": 3.5,
+        "B": 3.0,
+        "C+": 2.5,
+        "C": 2.0,
+        "D+": 1.5,
+        "D": 1.0,
+        "F": 0.0
+    };
 
-        const timetable =
-            getTimetable();
+    function calculateGPA(courses) {
 
+        if (!courses.length) {
+            return 0;
+        }
 
-        if (!timetable[index]) {
+        let totalQualityPoints = 0;
+        let totalCredits = 0;
+
+        courses.forEach(course => {
+
+            const credit =
+                Number(course.credit);
+
+            const point =
+                gradePoints[course.grade] ?? 0;
+
+            totalQualityPoints +=
+                credit * point;
+
+            totalCredits += credit;
+        });
+
+        if (totalCredits === 0) {
+            return 0;
+        }
+
+        return totalQualityPoints / totalCredits;
+    }
+
+    function renderGPA() {
+
+        const container =
+            document.getElementById("gpa");
+
+        if (!container) return;
+
+        const courses =
+            getData(GPA_KEY);
+
+        const gpa =
+            calculateGPA(courses);
+
+        container.innerHTML = `
+            <div class="page-header">
+
+                <div>
+                    <h2>GPA & CGPA Calculator</h2>
+                    <p>
+                        Calculate your academic performance
+                        using your courses, credits and grades.
+                    </p>
+                </div>
+
+                <button
+                    class="primary-btn"
+                    id="addGPACourseBtn">
+                    + Add Course
+                </button>
+
+            </div>
+
+            <div class="stats-grid">
+
+                <div class="stat-card">
+                    <span>Courses</span>
+                    <strong>${courses.length}</strong>
+                    <small>Courses entered</small>
+                </div>
+
+                <div class="stat-card">
+                    <span>Current GPA</span>
+                    <strong>${gpa.toFixed(2)}</strong>
+                    <small>4.00 scale</small>
+                </div>
+
+                <div class="stat-card">
+                    <span>Total Credits</span>
+                    <strong>
+                        ${courses.reduce(
+                            (total, course) =>
+                                total + Number(course.credit),
+                            0
+                        )}
+                    </strong>
+                    <small>Credit hours</small>
+                </div>
+
+            </div>
+
+            <div class="dashboard-card">
+
+                <h3>Your Courses</h3>
+
+                ${
+                    courses.length === 0
+                    ?
+                    `
+                    <div class="empty-state">
+                        <h3>No GPA courses yet</h3>
+                        <p>
+                            Add your courses, credit hours and grades
+                            to calculate your GPA.
+                        </p>
+                    </div>
+                    `
+                    :
+                    `
+                    <div class="gpa-table-wrapper">
+
+                        <table class="gpa-table">
+
+                            <thead>
+                                <tr>
+                                    <th>Course</th>
+                                    <th>Credit</th>
+                                    <th>Grade</th>
+                                    <th>Points</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                ${courses.map((course, index) => `
+                                    <tr>
+
+                                        <td>
+                                            ${escapeHTML(course.name)}
+                                        </td>
+
+                                        <td>
+                                            ${escapeHTML(course.credit)}
+                                        </td>
+
+                                        <td>
+                                            ${escapeHTML(course.grade)}
+                                        </td>
+
+                                        <td>
+                                            ${gradePoints[course.grade].toFixed(1)}
+                                        </td>
+
+                                        <td>
+                                            <button
+                                                class="delete-gpa-course"
+                                                data-index="${index}">
+                                                Delete
+                                            </button>
+                                        </td>
+
+                                    </tr>
+                                `).join("")}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+                    `
+                }
+
+            </div>
+
+            <div class="dashboard-card">
+
+                <h3>Grade Scale</h3>
+
+                <div class="grade-scale">
+
+                    <span>A = 4.0</span>
+                    <span>B+ = 3.5</span>
+                    <span>B = 3.0</span>
+                    <span>C+ = 2.5</span>
+                    <span>C = 2.0</span>
+                    <span>D+ = 1.5</span>
+                    <span>D = 1.0</span>
+                    <span>F = 0.0</span>
+
+                </div>
+
+            </div>
+        `;
+
+        const addButton =
+            document.getElementById("addGPACourseBtn");
+
+        if (addButton) {
+            addButton.addEventListener(
+                "click",
+                addGPACourse
+            );
+        }
+
+        document.querySelectorAll(".delete-gpa-course")
+            .forEach(button => {
+
+                button.addEventListener("click", () => {
+
+                    const index =
+                        Number(button.dataset.index);
+
+                    const courses =
+                        getData(GPA_KEY);
+
+                    courses.splice(index, 1);
+
+                    saveData(GPA_KEY, courses);
+
+                    renderGPA();
+                    updateDashboardStats();
+                });
+            });
+    }
+
+    function addGPACourse() {
+
+        const name =
+            prompt("Course name:");
+
+        if (!name) return;
+
+        const credit =
+            prompt("Credit hours:");
+
+        if (!credit) return;
+
+        if (Number(credit) <= 0) {
+            alert("Credit hours must be greater than 0.");
             return;
         }
 
-
-        const confirmed =
-            confirm(
-                `Remove "${timetable[index].course}" from your timetable?`
+        const grade =
+            prompt(
+                "Grade (A, B+, B, C+, C, D+, D, F):"
             );
 
+        if (!grade) return;
 
-        if (!confirmed) {
+        const formattedGrade =
+            grade.trim().toUpperCase();
+
+        if (!(formattedGrade in gradePoints)) {
+            alert(
+                "Invalid grade. Please use A, B+, B, C+, C, D+, D or F."
+            );
             return;
         }
 
+        const courses =
+            getData(GPA_KEY);
 
-        timetable.splice(
-            index,
-            1
-        );
+        courses.push({
+            name,
+            credit: Number(credit),
+            grade: formattedGrade
+        });
 
+        saveData(GPA_KEY, courses);
 
-        saveTimetable(
-            timetable
-        );
-
-
-        renderTimetable();
-
+        renderGPA();
     }
 
-
-    if (addTimetableButton) {
-
-        addTimetableButton.addEventListener(
-            "click",
-            addTimetableClass
-        );
-
-    }
-
-
-    if (emptyAddTimetableButton) {
-
-        emptyAddTimetableButton.addEventListener(
-            "click",
-            addTimetableClass
-        );
-
-    }
-
-
-    /* =========================================
-       Dashboard Statistics
-    ========================================= */
+    // =========================================
+    // DASHBOARD STATS
+    // =========================================
 
     function updateDashboardStats() {
 
         const courses =
-            getCourses();
-
+            getData(COURSE_KEY);
 
         const assignments =
-            getAssignments();
+            getData(ASSIGNMENT_KEY);
 
-
-        const statCards =
-            document.querySelectorAll(
-                ".stat-card strong"
+        const pendingAssignments =
+            assignments.filter(
+                assignment => !assignment.completed
             );
 
-
-        if (statCards.length >= 1) {
-
-            statCards[0].textContent =
-                courses.length;
-
-        }
-
+        const statCards =
+            document.querySelectorAll(".stat-card");
 
         if (statCards.length >= 2) {
 
-            statCards[1].textContent =
-                assignments.filter(
-                    (assignment) =>
-                        !assignment.completed
-                ).length;
+            const firstValue =
+                statCards[0].querySelector("strong");
 
+            const secondValue =
+                statCards[1].querySelector("strong");
+
+            if (firstValue) {
+                firstValue.textContent =
+                    courses.length;
+            }
+
+            if (secondValue) {
+                secondValue.textContent =
+                    pendingAssignments.length;
+            }
         }
-
     }
 
-
-    /* =========================================
-       Escape HTML
-    ========================================= */
-
-    function escapeHTML(value) {
-
-        return String(value)
-
-            .replaceAll(
-                "&",
-                "&amp;"
-            )
-
-            .replaceAll(
-                "<",
-                "&lt;"
-            )
-
-            .replaceAll(
-                ">",
-                "&gt;"
-            )
-
-            .replaceAll(
-                '"',
-                "&quot;"
-            )
-
-            .replaceAll(
-                "'",
-                "&#039;"
-            );
-
-    }
-
-
-    /* =========================================
-       Start Courses
-    ========================================= */
+    // =========================================
+    // INITIAL RENDER
+    // =========================================
 
     renderCourses();
-
-
-    /* =========================================
-       Start Assignments
-    ========================================= */
-
     renderAssignments();
-
-
-    /* =========================================
-       Start Timetable
-    ========================================= */
-
     renderTimetable();
-
-
-    /* =========================================
-       Update Dashboard
-    ========================================= */
-
     updateDashboardStats();
-
-
-    /* =========================================
-       Initial Page
-    ========================================= */
-
-    openPage("dashboard");
 
 });
