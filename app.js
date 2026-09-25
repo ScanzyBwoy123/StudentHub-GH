@@ -12,7 +12,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const ASSIGNMENT_KEY = "studenthub_assignments";
     const TIMETABLE_KEY = "studenthub_timetable";
     const GPA_KEY = "studenthub_gpa";
-const QUIZ_KEY = "studenthub_quiz_questions";
 const QUIZ_HISTORY_KEY = "studenthub_quiz_history";
 
 /* =========================================
@@ -1543,8 +1542,7 @@ let quizAnswered = false;
 // =========================================
 // RENDER QUIZ PAGE
 // =========================================
-
-function renderQuiz() {
+    function renderQuiz() {
 
     const container =
         document.getElementById("quiz");
@@ -1554,103 +1552,114 @@ function renderQuiz() {
     const questions =
         getQuizQuestions();
 
-    const subjects = [
-        "All Subjects",
-        ...new Set(
-            questions
-                .map(question => question.subject)
-                .filter(Boolean)
-        )
-    ];
+    const subjectGrid =
+        container.querySelector(
+            ".quiz-subject-grid"
+        );
 
-    container.innerHTML = `
-        <div class="page-header">
-
-            <div>
-                <h2>Question Bank & Quiz</h2>
-
-                <p>
-                    Test your knowledge and improve your
-                    academic performance.
-                </p>
-            </div>
-
-        </div>
+    if (!subjectGrid) return;
 
 
-        <div class="quiz-intro">
+    /* =========================================
+       ALL SUBJECTS
+    ========================================= */
 
-            <div class="quiz-intro-icon">
-                🧠
-            </div>
+    const allSubjectsButton = `
 
-            <div>
+        <button
+            class="quiz-subject quiz-all-subjects"
+            data-subject="All Subjects">
 
-                <h3>Practice Makes Progress</h3>
+            <span>🎯</span>
 
-                <p>
-                    Answer multiple-choice questions,
-                    check your answers and learn from
-                    the explanations.
-                </p>
+            <strong>
+                All Subjects
+            </strong>
 
-                <div class="quiz-info">
+            <small>
+                Mixed practice from the entire question bank
+            </small>
 
-                    <span>
-                        📚 ${questions.length} Questions
-                    </span>
+            <small class="quiz-subject-count">
+                ${questions.length}
+                question${questions.length === 1 ? "" : "s"}
+                available
+            </small>
 
-                    <span>
-                        🎯 MCQ Practice
-                    </span>
+        </button>
 
-                    <span>
-                        💡 Explanations
-                    </span>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <div class="quiz-card">
-
-            <div class="quiz-header">
-
-                <div>
-                    <h3>Choose a Subject</h3>
-
-                    <p>
-                        Select a subject to begin your practice.
-                    </p>
-                </div>
-
-            </div>
-
-
-            <div class="quiz-subject-selector">
-
-                ${subjects.map(subject => `
-                    <button
-                        class="quiz-subject-btn"
-                        data-subject="${subject}">
-                        📚 ${subject}
-                    </button>
-                `).join("")}
-
-            </div>
-
-        </div>
-
-
-        <div id="quizArea"></div>
     `;
 
 
-    document
-        .querySelectorAll(".quiz-subject-btn")
+    /* =========================================
+       MASTER SUBJECT LIST
+    ========================================= */
+
+    const subjectButtons =
+        QUESTION_BANK_SUBJECTS
+            .map(subject => {
+
+                const questionCount =
+                    questions.filter(
+                        question =>
+                            (
+                                question.subject ||
+                                question.course
+                            ) === subject.name
+                    ).length;
+
+                return `
+
+                    <button
+                        class="quiz-subject"
+                        data-subject="${subject.name}">
+
+                        <span>
+                            ${subject.icon}
+                        </span>
+
+                        <strong>
+                            ${subject.name}
+                        </strong>
+
+                        <small>
+                            ${subject.description}
+                        </small>
+
+                        <small
+                            class="quiz-subject-count">
+
+                            ${questionCount}
+                            question${
+                                questionCount === 1
+                                    ? ""
+                                    : "s"
+                            }
+                            available
+
+                        </small>
+
+                    </button>
+
+                `;
+
+            })
+            .join("");
+
+
+    subjectGrid.innerHTML =
+        allSubjectsButton +
+        subjectButtons;
+
+
+    /* =========================================
+       SUBJECT BUTTON EVENTS
+    ========================================= */
+
+    subjectGrid
+        .querySelectorAll(
+            ".quiz-subject"
+        )
         .forEach(button => {
 
             button.addEventListener(
@@ -1666,9 +1675,8 @@ function renderQuiz() {
             );
 
         });
+
 }
-
-
 // =========================================
 // START QUIZ
 // =========================================
