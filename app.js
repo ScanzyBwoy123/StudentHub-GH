@@ -1286,7 +1286,80 @@ function createQuestion(
     };
 
 }
-const defaultQuestions = [
+const defaultQuestions = [createQuestion(
+    101,
+    "Anatomy & Physiology",
+    "Skeletal System",
+    "How many bones are normally found in an adult human skeleton?",
+    [
+        "106",
+        "206",
+        "306",
+        "406"
+    ],
+    "206",
+    "A typical adult human skeleton contains approximately 206 bones."
+),
+
+createQuestion(
+    102,
+    "Anatomy & Physiology",
+    "Respiratory System",
+    "Where does gas exchange mainly occur in the lungs?",
+    [
+        "Trachea",
+        "Bronchi",
+        "Alveoli",
+        "Larynx"
+    ],
+    "Alveoli",
+    "Gas exchange between oxygen and carbon dioxide mainly occurs across the walls of the alveoli."
+),
+
+createQuestion(
+    103,
+    "Anatomy & Physiology",
+    "Cardiovascular System",
+    "Which chamber of the heart pumps oxygenated blood into the systemic circulation?",
+    [
+        "Right atrium",
+        "Right ventricle",
+        "Left atrium",
+        "Left ventricle"
+    ],
+    "Left ventricle",
+    "The left ventricle pumps oxygenated blood through the aorta to the systemic circulation."
+),
+
+createQuestion(
+    104,
+    "Anatomy & Physiology",
+    "Nervous System",
+    "Which organ is the main control center of the nervous system?",
+    [
+        "Heart",
+        "Brain",
+        "Kidney",
+        "Stomach"
+    ],
+    "Brain",
+    "The brain is the main control center of the nervous system and coordinates many body functions."
+),
+
+createQuestion(
+    105,
+    "Anatomy & Physiology",
+    "Digestive System",
+    "Which organ is primarily responsible for absorbing most nutrients from digested food?",
+    [
+        "Stomach",
+        "Small intestine",
+        "Large intestine",
+        "Esophagus"
+    ],
+    "Small intestine",
+    "Most nutrient absorption occurs in the small intestine, which has specialized structures that increase its absorptive surface area."
+),
 
     {
         id: 1,
