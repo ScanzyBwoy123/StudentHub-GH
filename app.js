@@ -1696,7 +1696,6 @@ function checkQuizAnswer(selectedAnswer) {
 // =========================================
 // QUIZ RESULT
 // =========================================
-
 function showQuizResult() {
 
     const area =
@@ -1716,16 +1715,57 @@ function showQuizResult() {
             (currentQuizScore / total) * 100
         );
 
+
     let message =
         "Keep practicing! 💪";
 
     if (percentage >= 80) {
+
         message =
             "Excellent work! 🎉";
+
     } else if (percentage >= 60) {
+
         message =
             "Good job! Keep improving. 👍";
     }
+
+
+    /* =========================================
+       SAVE QUIZ RESULT
+    ========================================== */
+
+    const historyKey =
+        "studenthub_quiz_history";
+
+    const history =
+        JSON.parse(
+            localStorage.getItem(historyKey)
+        ) || [];
+
+
+    history.push({
+
+        score:
+            currentQuizScore,
+
+        total:
+            total,
+
+        percentage:
+            percentage,
+
+        date:
+            new Date().toISOString()
+
+    });
+
+
+    localStorage.setItem(
+        historyKey,
+        JSON.stringify(history)
+    );
+
 
     area.innerHTML = `
 
@@ -1762,6 +1802,7 @@ function showQuizResult() {
 
         </div>
     `;
+
 
     document
         .getElementById(
