@@ -137,6 +137,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const ASSIGNMENT_STORAGE_KEY =
         "studenthub_assignments";
 
+    const TIMETABLE_STORAGE_KEY =
+        "studenthub_timetable";
+
 
     /* =========================================
        Generic Storage Helpers
@@ -1049,6 +1052,586 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =========================================
+       Timetable
+    ========================================= */
+
+    const timetablePage =
+        document.getElementById("timetable");
+
+
+    if (timetablePage) {
+
+        timetablePage.innerHTML = `
+
+            <div class="page-heading">
+
+                <span class="eyebrow">
+                    ACADEMICS
+                </span>
+
+                <h2>
+                    My Timetable
+                </h2>
+
+                <p>
+                    Organize your weekly classes, lectures and study periods.
+                </p>
+
+            </div>
+
+
+            <div class="course-toolbar">
+
+                <div>
+
+                    <strong id="timetableCount">
+                        0 Classes
+                    </strong>
+
+                    <span>
+                        in your weekly schedule
+                    </span>
+
+                </div>
+
+
+                <button
+                    class="primary-button"
+                    id="addTimetableButton"
+                    type="button"
+                >
+                    + Add Class
+                </button>
+
+            </div>
+
+
+            <div
+                class="timetable-list"
+                id="timetableList"
+            ></div>
+
+
+            <div
+                class="empty-page"
+                id="timetableEmpty"
+            >
+
+                <div class="large-icon">
+                    🗓️
+                </div>
+
+                <h3>
+                    No classes yet
+                </h3>
+
+                <p>
+                    Add your first class to build your weekly timetable.
+                </p>
+
+                <button
+                    class="primary-button"
+                    id="emptyAddTimetableButton"
+                    type="button"
+                >
+                    + Add Class
+                </button>
+
+            </div>
+
+        `;
+
+    }
+
+
+    const timetableList =
+        document.getElementById("timetableList");
+
+    const timetableEmpty =
+        document.getElementById("timetableEmpty");
+
+    const timetableCount =
+        document.getElementById("timetableCount");
+
+    const addTimetableButton =
+        document.getElementById(
+            "addTimetableButton"
+        );
+
+    const emptyAddTimetableButton =
+        document.getElementById(
+            "emptyAddTimetableButton"
+        );
+
+
+    function getTimetable() {
+
+        return getStoredData(
+            TIMETABLE_STORAGE_KEY
+        );
+
+    }
+
+
+    function saveTimetable(timetable) {
+
+        saveStoredData(
+            TIMETABLE_STORAGE_KEY,
+            timetable
+        );
+
+    }
+
+
+    function renderTimetable() {
+
+        if (!timetableList) {
+            return;
+        }
+
+
+        const timetable =
+            getTimetable();
+
+
+        timetableList.innerHTML = "";
+
+
+        if (timetableCount) {
+
+            timetableCount.textContent =
+                `${timetable.length} ${
+                    timetable.length === 1
+                        ? "Class"
+                        : "Classes"
+                }`;
+
+        }
+
+
+        if (timetable.length === 0) {
+
+            timetableList.style.display =
+                "none";
+
+
+            if (timetableEmpty) {
+
+                timetableEmpty.style.display =
+                    "flex";
+
+            }
+
+            return;
+
+        }
+
+
+        timetableList.style.display =
+            "grid";
+
+
+        if (timetableEmpty) {
+
+            timetableEmpty.style.display =
+                "none";
+
+        }
+
+
+        const dayOrder = [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday"
+        ];
+
+
+        timetable.sort((a, b) => {
+
+            const dayA =
+                dayOrder.indexOf(a.day);
+
+            const dayB =
+                dayOrder.indexOf(b.day);
+
+
+            if (dayA !== dayB) {
+                return dayA - dayB;
+            }
+
+
+            return String(
+                a.startTime
+            ).localeCompare(
+                String(b.startTime)
+            );
+
+        });
+
+
+        dayOrder.forEach((day) => {
+
+            const dayClasses =
+                timetable.filter(
+                    (item) => item.day === day
+                );
+
+
+            if (dayClasses.length === 0) {
+                return;
+            }
+
+
+            const daySection =
+                document.createElement("div");
+
+
+            daySection.className =
+                "timetable-day";
+
+
+            daySection.innerHTML = `
+
+                <div class="timetable-day-header">
+
+                    <h3>
+                        ${day}
+                    </h3>
+
+                    <span>
+                        ${dayClasses.length}
+                        ${
+                            dayClasses.length === 1
+                                ? "class"
+                                : "classes"
+                        }
+                    </span>
+
+                </div>
+
+
+                <div class="timetable-day-classes"></div>
+
+            `;
+
+
+            const classContainer =
+                daySection.querySelector(
+                    ".timetable-day-classes"
+                );
+
+
+            dayClasses.forEach((entry) => {
+
+                const originalIndex =
+                    timetable.indexOf(entry);
+
+
+                const classCard =
+                    document.createElement("div");
+
+
+                classCard.className =
+                    "timetable-entry";
+
+
+                classCard.innerHTML = `
+
+                    <div class="timetable-time">
+
+                        <strong>
+                            ${escapeHTML(
+                                entry.startTime
+                            )}
+                        </strong>
+
+                        <span>
+                            to
+                        </span>
+
+                        <strong>
+                            ${escapeHTML(
+                                entry.endTime
+                            )}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="timetable-details">
+
+                        <span class="timetable-course">
+                            ${escapeHTML(
+                                entry.course
+                            )}
+                        </span>
+
+
+                        <h4>
+                            ${escapeHTML(
+                                entry.lecturer ||
+                                "Class Session"
+                            )}
+                        </h4>
+
+
+                        <p>
+                            📍
+                            ${escapeHTML(
+                                entry.room ||
+                                "Location not added"
+                            )}
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        class="delete-timetable"
+                        data-index="${originalIndex}"
+                        type="button"
+                        title="Delete class"
+                    >
+                        ×
+                    </button>
+
+                `;
+
+
+                classContainer.appendChild(
+                    classCard
+                );
+
+            });
+
+
+            timetableList.appendChild(
+                daySection
+            );
+
+        });
+
+
+        document
+            .querySelectorAll(
+                ".delete-timetable"
+            )
+            .forEach((button) => {
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        const index =
+                            Number(
+                                button.dataset.index
+                            );
+
+                        deleteTimetable(
+                            index
+                        );
+
+                    }
+                );
+
+            });
+
+    }
+
+
+    function addTimetableClass() {
+
+        const course =
+            prompt(
+                "Enter the course or subject:"
+            );
+
+
+        if (!course || !course.trim()) {
+            return;
+        }
+
+
+        const day =
+            prompt(
+                "Enter the day (Monday-Sunday):"
+            );
+
+
+        if (!day || !day.trim()) {
+            return;
+        }
+
+
+        const normalizedDay =
+            day.trim()
+                .charAt(0)
+                .toUpperCase() +
+            day.trim()
+                .slice(1)
+                .toLowerCase();
+
+
+        const validDays = [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday"
+        ];
+
+
+        if (!validDays.includes(normalizedDay)) {
+
+            alert(
+                "Please enter a valid day from Monday to Sunday."
+            );
+
+            return;
+
+        }
+
+
+        const startTime =
+            prompt(
+                "Enter the start time (example: 08:00):"
+            );
+
+
+        if (!startTime || !startTime.trim()) {
+            return;
+        }
+
+
+        const endTime =
+            prompt(
+                "Enter the end time (example: 10:00):"
+            );
+
+
+        if (!endTime || !endTime.trim()) {
+            return;
+        }
+
+
+        const room =
+            prompt(
+                "Enter the classroom/location (optional):"
+            );
+
+
+        const lecturer =
+            prompt(
+                "Enter the lecturer name (optional):"
+            );
+
+
+        const timetable =
+            getTimetable();
+
+
+        timetable.push({
+
+            course:
+                course.trim(),
+
+            day:
+                normalizedDay,
+
+            startTime:
+                startTime.trim(),
+
+            endTime:
+                endTime.trim(),
+
+            room:
+                room && room.trim()
+                    ? room.trim()
+                    : "",
+
+            lecturer:
+                lecturer && lecturer.trim()
+                    ? lecturer.trim()
+                    : ""
+
+        });
+
+
+        saveTimetable(
+            timetable
+        );
+
+
+        renderTimetable();
+
+    }
+
+
+    function deleteTimetable(index) {
+
+        const timetable =
+            getTimetable();
+
+
+        if (!timetable[index]) {
+            return;
+        }
+
+
+        const confirmed =
+            confirm(
+                `Remove "${timetable[index].course}" from your timetable?`
+            );
+
+
+        if (!confirmed) {
+            return;
+        }
+
+
+        timetable.splice(
+            index,
+            1
+        );
+
+
+        saveTimetable(
+            timetable
+        );
+
+
+        renderTimetable();
+
+    }
+
+
+    if (addTimetableButton) {
+
+        addTimetableButton.addEventListener(
+            "click",
+            addTimetableClass
+        );
+
+    }
+
+
+    if (emptyAddTimetableButton) {
+
+        emptyAddTimetableButton.addEventListener(
+            "click",
+            addTimetableClass
+        );
+
+    }
+
+
+    /* =========================================
        Dashboard Statistics
     ========================================= */
 
@@ -1137,6 +1720,13 @@ document.addEventListener("DOMContentLoaded", () => {
     ========================================= */
 
     renderAssignments();
+
+
+    /* =========================================
+       Start Timetable
+    ========================================= */
+
+    renderTimetable();
 
 
     /* =========================================
