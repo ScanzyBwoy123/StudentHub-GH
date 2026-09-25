@@ -1251,7 +1251,41 @@ const QUESTION_BANK_SUBJECTS = [
 // =========================================
 
 const QUIZ_KEY = "studenthub_quiz_questions";
+/* =========================================
+   QUESTION BANK HELPERS
+========================================= */
 
+function createQuestion(
+    id,
+    subject,
+    topic,
+    question,
+    options,
+    answer,
+    explanation
+) {
+
+    return {
+
+        id: id,
+
+        subject: subject,
+
+        course: subject,
+
+        topic: topic,
+
+        question: question,
+
+        options: options,
+
+        answer: answer,
+
+        explanation: explanation
+
+    };
+
+}
 const defaultQuestions = [
 
     {
