@@ -1107,3 +1107,164 @@ button {
         height: 35px;
     }
 }
+/* =========================================
+   StudentHub GH - Course Management
+========================================= */
+
+.course-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin: 25px 0;
+    padding: 18px 20px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+}
+
+.course-toolbar strong {
+    display: block;
+    font-size: 18px;
+    color: #111827;
+}
+
+.course-toolbar span {
+    display: block;
+    margin-top: 4px;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.courses-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.course-card {
+    position: relative;
+    padding: 22px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.course-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+}
+
+.course-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    background: #eef2ff;
+    font-size: 23px;
+    margin-bottom: 18px;
+}
+
+.course-content {
+    padding-right: 28px;
+}
+
+.course-code {
+    display: inline-block;
+    margin-bottom: 7px;
+    color: #6366f1;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.course-content h3 {
+    margin: 0 0 8px;
+    font-size: 18px;
+    color: #111827;
+}
+
+.course-content p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.delete-course {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 38px;
+    height: 38px;
+    border: none;
+    border-radius: 10px;
+    background: #f3f4f6;
+    color: #6b7280;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.delete-course:hover {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.empty-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 280px;
+    padding: 35px 20px;
+    text-align: center;
+    background: #ffffff;
+    border: 1px dashed #d1d5db;
+    border-radius: 18px;
+}
+
+.empty-page .large-icon {
+    font-size: 45px;
+    margin-bottom: 12px;
+}
+
+.empty-page h3 {
+    margin: 0 0 8px;
+    color: #111827;
+    font-size: 20px;
+}
+
+.empty-page p {
+    max-width: 450px;
+    margin: 0 0 20px;
+    color: #6b7280;
+    line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+
+    .courses-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    .course-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .courses-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .course-toolbar .primary-button {
+        width: 100%;
+    }
+
+}
