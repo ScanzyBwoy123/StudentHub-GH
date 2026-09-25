@@ -12,7 +12,251 @@ document.addEventListener("DOMContentLoaded", () => {
     const ASSIGNMENT_KEY = "studenthub_assignments";
     const TIMETABLE_KEY = "studenthub_timetable";
     const GPA_KEY = "studenthub_gpa";
+const QUIZ_KEY = "studenthub_quiz_questions";
+const QUIZ_HISTORY_KEY = "studenthub_quiz_history";
 
+/* =========================================
+   MASTER QUESTION BANK SUBJECTS
+   Add future subjects here.
+========================================= */
+
+const QUESTION_BANK_SUBJECTS = [
+
+    {
+        name: "Anatomy & Physiology",
+        icon: "🫀",
+        description: "Human body structure and function"
+    },
+
+    {
+        name: "Microbiology",
+        icon: "🦠",
+        description: "Microorganisms and infection"
+    },
+
+    {
+        name: "Basic Nursing",
+        icon: "👩‍⚕️",
+        description: "Core nursing knowledge and skills"
+    },
+
+    {
+        name: "Fundamentals of Nursing",
+        icon: "🩺",
+        description: "Foundations of patient care"
+    },
+
+    {
+        name: "Nursing Process",
+        icon: "📋",
+        description: "Assessment, planning, implementation and evaluation"
+    },
+
+    {
+        name: "Advanced Nursing I",
+        icon: "📘",
+        description: "Advanced nursing practice I"
+    },
+
+    {
+        name: "Advanced Nursing II",
+        icon: "📗",
+        description: "Advanced nursing practice II"
+    },
+
+    {
+        name: "Advanced Nursing III",
+        icon: "📕",
+        description: "Advanced nursing practice III"
+    },
+
+    {
+        name: "Professionalism",
+        icon: "🎓",
+        description: "Professional nursing practice"
+    },
+
+    {
+        name: "Professional Adjustment",
+        icon: "🤝",
+        description: "Adjustment to professional nursing"
+    },
+
+    {
+        name: "Therapeutic Communication",
+        icon: "💬",
+        description: "Communication in patient care"
+    },
+
+    {
+        name: "Nursing Informatics",
+        icon: "💻",
+        description: "Technology and nursing information"
+    },
+
+    {
+        name: "Health Assessment",
+        icon: "🩺",
+        description: "Patient assessment and examination"
+    },
+
+    {
+        name: "Pathophysiology",
+        icon: "🔬",
+        description: "Disease processes and body changes"
+    },
+
+    {
+        name: "Medical Nursing I",
+        icon: "🏥",
+        description: "Medical nursing practice I"
+    },
+
+    {
+        name: "Medical Nursing II",
+        icon: "🏥",
+        description: "Medical nursing practice II"
+    },
+
+    {
+        name: "Medical Nursing III",
+        icon: "🏥",
+        description: "Medical nursing practice III"
+    },
+
+    {
+        name: "Pharmacology I",
+        icon: "💊",
+        description: "Medicines and pharmacology I"
+    },
+
+    {
+        name: "Pharmacology II",
+        icon: "💊",
+        description: "Medicines and pharmacology II"
+    },
+
+    {
+        name: "Pharmacology III",
+        icon: "💊",
+        description: "Medicines and pharmacology III"
+    },
+
+    {
+        name: "Surgery I",
+        icon: "🏥",
+        description: "Surgical nursing practice I"
+    },
+
+    {
+        name: "Surgery II",
+        icon: "🩹",
+        description: "Surgical nursing practice II"
+    },
+
+    {
+        name: "Surgery III",
+        icon: "🩺",
+        description: "Surgical nursing practice III"
+    },
+
+    {
+        name: "Medicine I",
+        icon: "🩺",
+        description: "Medicine and clinical care I"
+    },
+
+    {
+        name: "Medicine II",
+        icon: "🩺",
+        description: "Medicine and clinical care II"
+    },
+
+    {
+        name: "Medicine III",
+        icon: "🏥",
+        description: "Medicine and clinical care III"
+    },
+
+    {
+        name: "Maternal & Child Health",
+        icon: "🤰",
+        description: "Maternal and child healthcare"
+    },
+
+    {
+        name: "Midwifery",
+        icon: "👶",
+        description: "Pregnancy, birth and newborn care"
+    },
+
+    {
+        name: "Paediatric Nursing",
+        icon: "🧸",
+        description: "Nursing care of children"
+    },
+
+    {
+        name: "Community Health Nursing",
+        icon: "🌍",
+        description: "Community-based nursing care"
+    },
+
+    {
+        name: "Public Health",
+        icon: "🏥",
+        description: "Population and public health"
+    },
+
+    {
+        name: "Health Promotion",
+        icon: "❤️",
+        description: "Healthy living and disease prevention"
+    },
+
+    {
+        name: "Mental Health / Psychiatric Nursing",
+        icon: "🧠",
+        description: "Mental health and psychiatric care"
+    },
+
+    {
+        name: "Nutrition & Dietetics",
+        icon: "🥗",
+        description: "Nutrition and therapeutic diets"
+    },
+
+    {
+        name: "First Aid & Emergency Care",
+        icon: "🚑",
+        description: "Emergency response and first aid"
+    },
+
+    {
+        name: "Infection Prevention & Control",
+        icon: "🧼",
+        description: "Infection prevention and control"
+    },
+
+    {
+        name: "Nursing Ethics",
+        icon: "⚖️",
+        description: "Ethics and professional responsibilities"
+    },
+
+    {
+        name: "Research Methods",
+        icon: "📚",
+        description: "Nursing research and methodology"
+    },
+
+    {
+        name: "Statistics / Biostatistics",
+        icon: "📊",
+        description: "Statistics for health sciences"
+    }
+
+];
     // =========================================
     // BASIC HELPERS
     // =========================================
