@@ -318,9 +318,23 @@ const QUESTION_BANK_SUBJECTS = [
             }
 
             if (pageName === "gpa") {
-                renderGPA();
-                if (pageName === "quiz") renderQuiz();
-            }
+    renderGPA();
+}
+
+if (pageName === "quiz") {
+    renderQuiz();
+
+    setTimeout(() => {
+        const quizPage = document.getElementById("quiz");
+
+        if (quizPage) {
+            quizPage.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+        }
+    }, 50);
+}
         });
     });
 
@@ -1871,6 +1885,17 @@ function startQuiz(subject = "All Subjects") {
     ========================================= */
 
     showQuizQuestion();
+
+setTimeout(() => {
+    const quizArea = document.getElementById("quizArea");
+
+    if (quizArea) {
+        quizArea.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+    }
+}, 100);
 
 }
 
