@@ -2612,3 +2612,89 @@ body {
         animation: none;
     }
 }
+/* =========================================
+   GPA & CGPA CALCULATOR
+========================================= */
+
+.gpa-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 20px;
+}
+
+.gpa-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px;
+}
+
+.gpa-table th {
+    text-align: left;
+    padding: 15px;
+    background: #f1f5f9;
+    color: #475569;
+    font-size: 13px;
+    font-weight: 700;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.gpa-table td {
+    padding: 16px 15px;
+    border-bottom: 1px solid #e2e8f0;
+    color: #334155;
+    font-size: 14px;
+}
+
+.gpa-table tbody tr {
+    transition: background 0.2s ease;
+}
+
+.gpa-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.delete-gpa-course {
+    border: none;
+    padding: 7px 12px;
+    border-radius: 8px;
+    background: #fee2e2;
+    color: #dc2626;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.delete-gpa-course:hover {
+    background: #fecaca;
+    transform: translateY(-1px);
+}
+
+.grade-scale {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.grade-scale span {
+    padding: 14px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    text-align: center;
+    color: #334155;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+@media (max-width: 700px) {
+
+    .grade-scale {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .gpa-table {
+        min-width: 560px;
+    }
+}
