@@ -1276,7 +1276,10 @@ function getQuizQuestions() {
             localStorage.getItem(QUIZ_KEY)
         );
 
-    if (saved && saved.length) {
+    if (
+        saved &&
+        saved.length >= defaultQuestions.length
+    ) {
         return saved;
     }
 
@@ -1287,7 +1290,6 @@ function getQuizQuestions() {
 
     return defaultQuestions;
 }
-
 
 let currentQuizQuestions = [];
 let currentQuizIndex = 0;
