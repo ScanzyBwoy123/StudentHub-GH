@@ -1805,13 +1805,16 @@ function showQuizResult() {
 
 
     document
-        .getElementById(
-            "restartQuizBtn"
-        )
-        .addEventListener(
-            "click",
-            startQuiz
-        );
+    .getElementById(
+        "restartQuizBtn"
+    )
+    .addEventListener(
+        "click",
+        startQuiz
+    );
+
+updateQuizPerformance();
+
 }
 /* =========================================
    QUIZ PERFORMANCE STATISTICS
