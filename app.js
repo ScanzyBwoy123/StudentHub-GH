@@ -1682,31 +1682,89 @@ let quizAnswered = false;
 // =========================================
 
 function startQuiz(subject = "All Subjects") {
-currentQuizSubject = subject;
-    let questions = getQuizQuestions();
+
+    currentQuizSubject = subject;
+
+    let questions =
+        getQuizQuestions();
+
+
+    /* =========================================
+       FILTER QUESTIONS BY SUBJECT
+    ========================================= */
 
     if (subject !== "All Subjects") {
-        questions = questions.filter(
-            question =>
-                question.course === subject
-        );
+
+        questions =
+            questions.filter(
+                question => {
+
+                    const questionSubject =
+                        question.subject ||
+                        question.course ||
+                        "";
+
+                    return (
+                        questionSubject === subject
+                    );
+
+                }
+            );
+
     }
 
+
+    /* =========================================
+       CHECK QUESTION AVAILABILITY
+    ========================================= */
+
     if (questions.length === 0) {
-        alert("No questions available for this subject yet.");
+
+        alert(
+            `No questions are available for ${subject} yet.`
+        );
+
         return;
+
     }
+
+
+    /* =========================================
+       RANDOMIZE QUESTIONS
+    ========================================= */
 
     currentQuizQuestions =
         [...questions]
-        .sort(() => Math.random() - 0.5)
-        .slice(0, Math.min(10, questions.length));
+            .sort(
+                () =>
+                    Math.random() - 0.5
+            )
+            .slice(
+                0,
+                Math.min(
+                    10,
+                    questions.length
+                )
+            );
+
+
+    /* =========================================
+       RESET QUIZ
+    ========================================= */
 
     currentQuizIndex = 0;
+
     currentQuizScore = 0;
+
     quizAnswered = false;
 
+
+    /* =========================================
+       SHOW FIRST QUESTION
+    ========================================= */
+
     showQuizQuestion();
+
 }
 
 // =========================================
