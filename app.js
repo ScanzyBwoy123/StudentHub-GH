@@ -1888,7 +1888,72 @@ function getQuizPerformanceStats() {
     };
 
 }
+/* =========================================
+   UPDATE QUIZ PERFORMANCE ON DASHBOARD
+========================================= */
 
+function updateQuizPerformance() {
+
+    const stats =
+        getQuizPerformanceStats();
+
+
+    const totalAttempts =
+        document.getElementById(
+            "quizTotalAttempts"
+        );
+
+
+    const averageScore =
+        document.getElementById(
+            "quizAverageScore"
+        );
+
+
+    const highestScore =
+        document.getElementById(
+            "quizHighestScore"
+        );
+
+
+    const totalQuestions =
+        document.getElementById(
+            "quizTotalQuestions"
+        );
+
+
+    if (totalAttempts) {
+
+        totalAttempts.textContent =
+            stats.totalQuizzes;
+
+    }
+
+
+    if (averageScore) {
+
+        averageScore.textContent =
+            `${stats.averageScore}%`;
+
+    }
+
+
+    if (highestScore) {
+
+        highestScore.textContent =
+            `${stats.highestScore}%`;
+
+    }
+
+
+    if (totalQuestions) {
+
+        totalQuestions.textContent =
+            stats.totalQuestions;
+
+    }
+
+}
 // =========================================
 // INITIAL RENDER
 // =========================================
@@ -1898,5 +1963,5 @@ renderAssignments();
 renderTimetable();
 updateDashboardStats();
 renderQuiz();
-
+updateQuizPerformance();
 });
