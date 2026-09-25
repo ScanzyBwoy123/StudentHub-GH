@@ -1747,19 +1747,22 @@ function showQuizResult() {
 
     history.push({
 
-        score:
-            currentQuizScore,
+    subject:
+        currentQuizSubject,
 
-        total:
-            total,
+    score:
+        currentQuizScore,
 
-        percentage:
-            percentage,
+    total:
+        total,
 
-        date:
-            new Date().toISOString()
+    percentage:
+        percentage,
 
-    });
+    date:
+        new Date().toISOString()
+
+});
 
 
     localStorage.setItem(
