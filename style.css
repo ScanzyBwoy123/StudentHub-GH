@@ -1268,3 +1268,174 @@ button {
     }
 
 }
+/* =========================================
+   StudentHub GH - Assignment Management
+========================================= */
+
+.assignments-list {
+    display: grid;
+    gap: 16px;
+}
+
+.assignment-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 20px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+}
+
+.assignment-main {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    min-width: 0;
+}
+
+.assignment-icon {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    background: #eef2ff;
+    font-size: 22px;
+}
+
+.assignment-main h3 {
+    margin: 5px 0 7px;
+    color: #111827;
+    font-size: 17px;
+}
+
+.assignment-main p {
+    margin: 0 0 8px;
+    color: #6b7280;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.assignment-main small {
+    color: #6b7280;
+    font-size: 13px;
+}
+
+.assignment-course {
+    color: #6366f1;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.assignment-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+}
+
+.assignment-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 7px 11px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.assignment-status.pending {
+    background: #fff7ed;
+    color: #c2410c;
+}
+
+.assignment-status.completed {
+    background: #ecfdf5;
+    color: #047857;
+}
+
+.complete-assignment {
+    min-height: 38px;
+    padding: 8px 13px;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #374151;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.complete-assignment:hover {
+    background: #f9fafb;
+}
+
+.delete-assignment {
+    width: 38px;
+    height: 38px;
+    border: none;
+    border-radius: 10px;
+    background: #f3f4f6;
+    color: #6b7280;
+    font-size: 21px;
+    cursor: pointer;
+}
+
+.delete-assignment:hover {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+@media (max-width: 700px) {
+
+    .assignment-card {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .assignment-actions {
+        justify-content: flex-start;
+        width: 100%;
+    }
+
+    .complete-assignment {
+        flex: 1;
+    }
+
+}
+
+@media (max-width: 450px) {
+
+    .assignment-main {
+        gap: 12px;
+    }
+
+    .assignment-icon {
+        width: 42px;
+        height: 42px;
+        font-size: 19px;
+    }
+
+    .assignment-actions {
+        display: grid;
+        grid-template-columns: 1fr auto;
+    }
+
+    .assignment-status {
+        grid-column: 1 / -1;
+        justify-self: flex-start;
+    }
+
+    .complete-assignment {
+        width: 100%;
+    }
+
+}
