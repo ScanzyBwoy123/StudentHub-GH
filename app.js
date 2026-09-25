@@ -1813,7 +1813,81 @@ function showQuizResult() {
             startQuiz
         );
 }
+/* =========================================
+   QUIZ PERFORMANCE STATISTICS
+========================================= */
 
+function getQuizPerformanceStats() {
+
+    const historyKey =
+        "studenthub_quiz_history";
+
+    const history =
+        JSON.parse(
+            localStorage.getItem(historyKey)
+        ) || [];
+
+
+    if (history.length === 0) {
+
+        return {
+            totalQuizzes: 0,
+            averageScore: 0,
+            highestScore: 0,
+            totalQuestions: 0
+        };
+
+    }
+
+
+    const totalQuizzes =
+        history.length;
+
+
+    const totalPercentage =
+        history.reduce(
+            (sum, result) =>
+                sum + Number(result.percentage || 0),
+            0
+        );
+
+
+    const averageScore =
+        Math.round(
+            totalPercentage / totalQuizzes
+        );
+
+
+    const highestScore =
+        Math.max(
+            ...history.map(
+                result =>
+                    Number(result.percentage || 0)
+            )
+        );
+
+
+    const totalQuestions =
+        history.reduce(
+            (sum, result) =>
+                sum + Number(result.total || 0),
+            0
+        );
+
+
+    return {
+
+        totalQuizzes,
+
+        averageScore,
+
+        highestScore,
+
+        totalQuestions
+
+    };
+
+}
 
 // =========================================
 // INITIAL RENDER
