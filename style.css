@@ -3579,3 +3579,138 @@ body {
     }
 
 }
+/* =========================================================
+   STUDENTHUB GH — FULL QUESTION BANK SUBJECTS
+========================================================= */
+
+.quiz-subject-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 20px;
+}
+
+.quiz-subject {
+    min-height: 165px;
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 8px;
+    text-align: left;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    background: #f8fafc;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.quiz-subject > span {
+    width: 46px;
+    height: 46px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+    background: #ffffff;
+
+    font-size: 24px;
+
+    box-shadow:
+        0 5px 14px rgba(15, 23, 42, 0.06);
+}
+
+.quiz-subject strong {
+    color: #0f172a;
+    font-size: 15px;
+    line-height: 1.35;
+}
+
+.quiz-subject small {
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.quiz-subject-count {
+    margin-top: 4px;
+
+    color: #2563eb !important;
+
+    font-size: 12px !important;
+    font-weight: 700;
+}
+
+.quiz-subject:hover {
+    background: #eff6ff;
+    border-color: #93c5fd;
+
+    transform: translateY(-4px);
+
+    box-shadow:
+        0 12px 25px rgba(37, 99, 235, 0.10);
+}
+
+.quiz-subject:active {
+    transform: translateY(-1px);
+}
+
+
+/* ALL SUBJECTS */
+
+.quiz-all-subjects {
+    background: linear-gradient(
+        135deg,
+        #eff6ff,
+        #f5f3ff
+    );
+
+    border-color: #c7d2fe;
+}
+
+.quiz-all-subjects:hover {
+    background: linear-gradient(
+        135deg,
+        #dbeafe,
+        #ede9fe
+    );
+}
+
+
+/* MOBILE */
+
+@media (max-width: 900px) {
+
+    .quiz-subject-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .quiz-subject-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .quiz-subject {
+        min-height: 140px;
+        padding: 20px;
+
+        border-radius: 18px;
+    }
+
+}
