@@ -1199,10 +1199,21 @@ function renderQuiz() {
 // START QUIZ
 // =========================================
 
-function startQuiz() {
+function startQuiz(subject = "All Subjects") {
 
-    const questions =
-        getQuizQuestions();
+    let questions = getQuizQuestions();
+
+    if (subject !== "All Subjects") {
+        questions = questions.filter(
+            question =>
+                question.subject === subject
+        );
+    }
+
+    if (questions.length === 0) {
+        alert("No questions available for this subject yet.");
+        return;
+    }
 
     currentQuizQuestions =
         [...questions]
@@ -1215,7 +1226,6 @@ function startQuiz() {
 
     showQuizQuestion();
 }
-
 
 // =========================================
 // SHOW QUESTION
