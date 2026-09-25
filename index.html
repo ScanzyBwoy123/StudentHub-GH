@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>StudentHub GH</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="app">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+
+            <div class="brand">
+                <div class="brand-icon">🎓</div>
+
+                <div>
+                    <h1>StudentHub</h1>
+                    <span>GH</span>
+                </div>
+            </div>
+
+            <nav class="navigation">
+
+                <button class="nav-item active" data-page="dashboard">
+                    <span>🏠</span>
+                    Dashboard
+                </button>
+
+                <button class="nav-item" data-page="courses">
+                    <span>📚</span>
+                    Courses
+                </button>
+
+                <button class="nav-item" data-page="assignments">
+                    <span>📝</span>
+                    Assignments
+                </button>
+
+                <button class="nav-item" data-page="timetable">
+                    <span>📅</span>
+                    Timetable
+                </button>
+
+                <button class="nav-item" data-page="gpa">
+                    <span>🧮</span>
+                    GPA Calculator
+                </button>
+
+                <button class="nav-item" data-page="exams">
+                    <span>⏰</span>
+                    Exam Countdown
+                </button>
+
+                <button class="nav-item" data-page="notes">
+                    <span>📖</span>
+                    My Notes
+                </button>
+
+            </nav>
+
+            <div class="sidebar-bottom">
+
+                <button class="nav-item" data-page="profile">
+                    <span>👤</span>
+                    Profile
+                </button>
+
+                <div class="free-badge">
+                    <strong>StudentHub GH</strong>
+                    <small>Built for students 🇬🇭</small>
+                </div>
+
+            </div>
+
+        </aside>
+
+
+        <!-- Main Content -->
+        <main class="main-content">
+
+            <!-- Top Bar -->
+            <header class="topbar">
+
+                <div class="mobile-brand">
+                    🎓 StudentHub GH
+                </div>
+
+                <div class="topbar-right">
+
+                    <button class="notification-btn" title="Notifications">
+                        🔔
+                        <span class="notification-dot"></span>
+                    </button>
+
+                    <div class="user-mini">
+
+                        <div class="avatar">
+                            HP
+                        </div>
+
+                        <div class="user-info">
+                            <strong>Hacker Pro</strong>
+                            <span>Student</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- Pages -->
+
+            <!-- Dashboard -->
+            <section class="page active" id="dashboard">
+
+                <div class="welcome">
+
+                    <div>
+                        <span class="eyebrow">STUDENT DASHBOARD</span>
+
+                        <h2>
+                            Welcome back, Hacker Pro! 👋
+                        </h2>
+
+                        <p>
+                            Stay organized, keep learning, and stay ahead of your studies.
+                        </p>
+                    </div>
+
+                    <div class="date-card">
+                        <span>Today</span>
+                        <strong id="currentDate">Loading...</strong>
+                    </div>
+
+                </div>
+
+
+                <!-- Statistics -->
+                <div class="stats-grid">
+
+                    <div class="stat-card">
+                        <div class="stat-icon">📚</div>
+
+                        <div>
+                            <span>Courses</span>
+                            <strong>0</strong>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">📝</div>
+
+                        <div>
+                            <span>Assignments</span>
+                            <strong>0</strong>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">📅</div>
+
+                        <div>
+                            <span>Classes Today</span>
+                            <strong>0</strong>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">🎯</div>
+
+                        <div>
+                            <span>Current GPA</span>
+                            <strong>0.00</strong>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <!-- Dashboard Grid -->
+                <div class="dashboard-grid">
+
+                    <!-- Quick Actions -->
+                    <div class="dashboard-card">
+
+                        <div class="card-header">
+                            <div>
+                                <span class="card-label">QUICK ACTIONS</span>
+                                <h3>What do you want to do?</h3>
+                            </div>
+                        </div>
+
+                        <div class="quick-actions">
+
+                            <button class="action-card" data-page="courses">
+                                <span>📚</span>
+                                <strong>View Courses</strong>
+                                <small>Manage your courses</small>
+                            </button>
+
+                            <button class="action-card" data-page="assignments">
+                                <span>📝</span>
+                                <strong>Assignments</strong>
+                                <small>Track your work</small>
+                            </button>
+
+                            <button class="action-card" data-page="gpa">
+                                <span>🧮</span>
+                                <strong>Calculate GPA</strong>
+                                <small>Check your GPA</small>
+                            </button>
+
+                            <button class="action-card" data-page="timetable">
+                                <span>📅</span>
+                                <strong>Timetable</strong>
+                                <small>View your classes</small>
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Upcoming -->
+                    <div class="dashboard-card">
+
+                        <div class="card-header">
+
+                            <div>
+                                <span class="card-label">UPCOMING</span>
+                                <h3>Important dates</h3>
+                            </div>
+
+                            <button class="text-button" data-page="exams">
+                                View all
+                            </button>
+
+                        </div>
+
+                        <div class="empty-state">
+
+                            <div class="empty-icon">
+                                📌
+                            </div>
+
+                            <h4>No upcoming events</h4>
+
+                            <p>
+                                Add your exams and important dates to keep track of them.
+                            </p>
+
+                            <button class="primary-button" data-page="exams">
+                                Add Exam
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Getting Started -->
+                <div class="dashboard-card getting-started">
+
+                    <div class="card-header">
+
+                        <div>
+                            <span class="card-label">GETTING STARTED</span>
+                            <h3>Build your student workspace</h3>
+                        </div>
+
+                    </div>
+
+                    <div class="progress-container">
+
+                        <div class="progress-info">
+                            <span>Setup progress</span>
+                            <strong>0%</strong>
+                        </div>
+
+                        <div class="progress-bar">
+                            <div class="progress-fill"></div>
+                        </div>
+
+                    </div>
+
+                    <div class="setup-list">
+
+                        <div class="setup-item">
+                            <span>1</span>
+                            <div>
+                                <strong>Add your courses</strong>
+                                <small>Start by adding the subjects you are studying.</small>
+                            </div>
+                            <button data-page="courses">Start</button>
+                        </div>
+
+                        <div class="setup-item">
+                            <span>2</span>
+                            <div>
+                                <strong>Build your timetable</strong>
+                                <small>Keep your weekly classes organized.</small>
+                            </div>
+                            <button data-page="timetable">Start</button>
+                        </div>
+
+                        <div class="setup-item">
+                            <span>3</span>
+                            <div>
+                                <strong>Add your exams</strong>
+                                <small>Never lose track of an important exam.</small>
+                            </div>
+                            <button data-page="exams">Start</button>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- Courses -->
+            <section class="page" id="courses">
+
+                <div class="page-heading">
+                    <span class="eyebrow">ACADEMICS</span>
+                    <h2>My Courses</h2>
+                    <p>Manage the courses and subjects you are studying.</p>
+                </div>
+
+                <div class="empty-page">
+
+                    <div class="large-icon">📚</div>
+
+                    <h3>No courses yet</h3>
+
+                    <p>
+                        Your courses will appear here once you add them.
+                    </p>
+
+                    <button class="primary-button">
+                        + Add Course
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- Assignments -->
+            <section class="page" id="assignments">
+
+                <div class="page-heading">
+                    <span class="eyebrow">ACADEMICS</span>
+                    <h2>Assignments</h2>
+                    <p>Keep track of assignments and deadlines.</p>
+                </div>
+
+                <div class="empty-page">
+
+                    <div class="large-icon">📝</div>
+
+                    <h3>No assignments yet</h3>
+
+                    <p>
+                        Add assignments here so you never miss a deadline.
+                    </p>
+
+                    <button class="primary-button">
+                        + Add Assignment
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- Timetable -->
+            <section class="page" id="timetable">
+
+                <div class="page-heading">
+                    <span class="eyebrow">SCHEDULE</span>
+                    <h2>My Timetable</h2>
+                    <p>Organize your weekly class schedule.</p>
+                </div>
+
+                <div class="empty-page">
+
+                    <div class="large-icon">📅</div>
+
+                    <h3>Your timetable is empty</h3>
+
+                    <p>
+                        Add your classes to build your weekly timetable.
+                    </p>
+
+                    <button class="primary-button">
+                        + Add Class
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- GPA -->
+            <section class="page" id="gpa">
+
+                <div class="page-heading">
+                    <span class="eyebrow">ACADEMICS</span>
+                    <h2>GPA Calculator</h2>
+                    <p>Calculate and track your academic performance.</p>
+                </div>
+
+                <div class="empty-page">
+
+                    <div class="large-icon">🧮</div>
+
+                    <h3>GPA Calculator</h3>
+
+                    <p>
+                        Your GPA calculator will be available here.
+                    </p>
+
+                    <button class="primary-button">
+                        Start Calculating
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- Exams -->
+            <section class="page" id="exams">
+
+                <div class="page-heading">
+                    <span class="eyebrow">EXAM PREPARATION</span>
+                    <h2>Exam Countdown</h2>
+                    <p>Keep track of your upcoming examinations.</p>
+                </div>
+
+                <div class="empty-page">
+
+                    <div class="large-icon">⏰</div>
+
+                    <h3>No exams added</h3>
+
+                    <p>
+                        Add an exam and StudentHub will help you keep track of the date.
+                    </p>
+
+                    <button class="primary-button">
+                        + Add Exam
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- Notes -->
+            <section class="page" id="notes">
+
+                <div class="page-heading">
+                    <span class="eyebrow">LEARNING</span>
+                    <h2>My Notes</h2>
+                    <p>Keep your important study notes in one place.</p>
+                </div>
+
+                <div class="empty-page">
+
+                    <div class="large-icon">📖</div>
+
+                    <h3>No notes yet</h3>
+
+                    <p>
+                        Create your first study note.
+                    </p>
+
+                    <button class="primary-button">
+                        + Create Note
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- Profile -->
+            <section class="page" id="profile">
+
+                <div class="page-heading">
+                    <span class="eyebrow">ACCOUNT</span>
+                    <h2>My Profile</h2>
+                    <p>Manage your student information.</p>
+                </div>
+
+                <div class="profile-card">
+
+                    <div class="profile-avatar">
+                        HP
+                    </div>
+
+                    <div>
+                        <h3>Hacker Pro</h3>
+                        <p>StudentHub GH Student</p>
+                    </div>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+
+    <script src="app.js"></script>
+
+</body>
+</html>
