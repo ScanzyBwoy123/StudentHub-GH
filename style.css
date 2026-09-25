@@ -2886,3 +2886,54 @@ body {
         padding: 14px;
     }
 }
+/* =========================================
+   QUIZ SUBJECT SELECTOR
+========================================= */
+
+.quiz-subject-selector {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 20px;
+}
+
+.quiz-subject-btn {
+    width: 100%;
+    padding: 16px 18px;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    background: #f8fafc;
+    color: #334155;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: left;
+    cursor: pointer;
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.quiz-subject-btn:hover {
+    background: #eff6ff;
+    border-color: #93c5fd;
+    color: #1d4ed8;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.10);
+}
+
+.quiz-subject-btn:active {
+    transform: translateY(0);
+}
+
+@media (max-width: 700px) {
+
+    .quiz-subject-selector {
+        grid-template-columns: 1fr;
+    }
+
+    .quiz-subject-btn {
+        padding: 15px;
+    }
+}
