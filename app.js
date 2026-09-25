@@ -1130,24 +1130,29 @@ function renderQuiz() {
     const questions =
         getQuizQuestions();
 
+    const subjects = [
+        "All Subjects",
+        ...new Set(
+            questions
+                .map(question => question.subject)
+                .filter(Boolean)
+        )
+    ];
+
     container.innerHTML = `
         <div class="page-header">
 
             <div>
                 <h2>Question Bank & Quiz</h2>
+
                 <p>
                     Test your knowledge and improve your
                     academic performance.
                 </p>
             </div>
 
-            <button
-                class="primary-btn"
-                id="startQuizBtn">
-                Start Quiz
-            </button>
-
         </div>
+
 
         <div class="quiz-intro">
 
@@ -1156,6 +1161,7 @@ function renderQuiz() {
             </div>
 
             <div>
+
                 <h3>Practice Makes Progress</h3>
 
                 <p>
@@ -1179,19 +1185,63 @@ function renderQuiz() {
                     </span>
 
                 </div>
+
             </div>
 
         </div>
 
+
+        <div class="quiz-card">
+
+            <div class="quiz-header">
+
+                <div>
+                    <h3>Choose a Subject</h3>
+
+                    <p>
+                        Select a subject to begin your practice.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="quiz-subject-selector">
+
+                ${subjects.map(subject => `
+                    <button
+                        class="quiz-subject-btn"
+                        data-subject="${subject}">
+                        📚 ${subject}
+                    </button>
+                `).join("")}
+
+            </div>
+
+        </div>
+
+
         <div id="quizArea"></div>
     `;
 
+
     document
-        .getElementById("startQuizBtn")
-        .addEventListener(
-            "click",
-            startQuiz
-        );
+        .querySelectorAll(".quiz-subject-btn")
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    const subject =
+                        button.dataset.subject;
+
+                    startQuiz(subject);
+
+                }
+            );
+
+        });
 }
 
 
