@@ -76,6 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (pageName === "gpa") {
                 renderGPA();
+                if (pageName === "quiz") renderQuiz();
             }
         });
     });
