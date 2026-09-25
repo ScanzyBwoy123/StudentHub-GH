@@ -1,5 +1,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
+// StudentHub AI Question Generator
+
 Deno.serve(async (req) => {
   try {
     if (req.method !== "POST") {
