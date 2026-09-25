@@ -1010,8 +1010,10 @@ document.addEventListener("DOMContentLoaded", () => {
 const QUIZ_KEY = "studenthub_quiz_questions";
 
 const defaultQuestions = [
+
     {
         id: 1,
+        subject: "Anatomy",
         course: "Anatomy",
         topic: "Basic Anatomy",
         question: "Which organ pumps blood around the body?",
@@ -1028,6 +1030,7 @@ const defaultQuestions = [
 
     {
         id: 2,
+        subject: "Anatomy",
         course: "Anatomy",
         topic: "Basic Anatomy",
         question: "What is the largest organ of the human body?",
@@ -1044,6 +1047,7 @@ const defaultQuestions = [
 
     {
         id: 3,
+        subject: "Nursing",
         course: "Nursing",
         topic: "Vital Signs",
         question: "Which vital sign measures the force of blood against artery walls?",
@@ -1060,6 +1064,7 @@ const defaultQuestions = [
 
     {
         id: 4,
+        subject: "Microbiology",
         course: "Microbiology",
         topic: "Microorganisms",
         question: "Which microorganism is responsible for malaria?",
@@ -1071,11 +1076,12 @@ const defaultQuestions = [
         ],
         answer: "Plasmodium",
         explanation:
-            "Malaria is caused by parasites of the genus Plasmodium and is transmitted through infected mosquitoes."
+            "Malaria is caused by parasites of the genus Plasmodium."
     },
 
     {
         id: 5,
+        subject: "Pharmacology",
         course: "Pharmacology",
         topic: "Medication Safety",
         question: "Which route of administration involves giving medicine directly into a vein?",
@@ -1088,8 +1094,180 @@ const defaultQuestions = [
         answer: "Intravenous",
         explanation:
             "Intravenous administration delivers medication directly into a vein."
+    },
+
+    {
+        id: 6,
+        subject: "Anatomy",
+        course: "Anatomy",
+        topic: "Skeletal System",
+        question: "How many bones are normally found in an adult human body?",
+        options: [
+            "106",
+            "206",
+            "306",
+            "406"
+        ],
+        answer: "206",
+        explanation:
+            "A typical adult human skeleton contains approximately 206 bones."
+    },
+
+    {
+        id: 7,
+        subject: "Anatomy",
+        course: "Anatomy",
+        topic: "Respiratory System",
+        question: "Where does gas exchange mainly occur in the lungs?",
+        options: [
+            "Trachea",
+            "Bronchi",
+            "Alveoli",
+            "Larynx"
+        ],
+        answer: "Alveoli",
+        explanation:
+            "The alveoli are tiny air sacs where oxygen and carbon dioxide are exchanged."
+    },
+
+    {
+        id: 8,
+        subject: "Nursing",
+        course: "Nursing",
+        topic: "Vital Signs",
+        question: "Which device is commonly used to measure oxygen saturation?",
+        options: [
+            "Thermometer",
+            "Pulse oximeter",
+            "Stethoscope",
+            "Sphygmomanometer"
+        ],
+        answer: "Pulse oximeter",
+        explanation:
+            "A pulse oximeter estimates the oxygen saturation of blood using a sensor placed on a finger or other suitable site."
+    },
+
+    {
+        id: 9,
+        subject: "Nursing",
+        course: "Nursing",
+        topic: "Infection Prevention",
+        question: "What is one of the most important ways to prevent the spread of infection in healthcare settings?",
+        options: [
+            "Hand hygiene",
+            "Skipping documentation",
+            "Sharing needles",
+            "Avoiding patient assessment"
+        ],
+        answer: "Hand hygiene",
+        explanation:
+            "Proper hand hygiene is one of the most important measures for reducing the transmission of microorganisms."
+    },
+
+    {
+        id: 10,
+        subject: "Microbiology",
+        course: "Microbiology",
+        topic: "Bacteria",
+        question: "Which of the following is a bacterium?",
+        options: [
+            "Staphylococcus",
+            "Plasmodium",
+            "Influenza virus",
+            "Candida"
+        ],
+        answer: "Staphylococcus",
+        explanation:
+            "Staphylococcus is a genus of bacteria."
+    },
+
+    {
+        id: 11,
+        subject: "Microbiology",
+        course: "Microbiology",
+        topic: "Fungi",
+        question: "Which microorganism is a fungus?",
+        options: [
+            "Candida",
+            "Plasmodium",
+            "Escherichia coli",
+            "Influenza virus"
+        ],
+        answer: "Candida",
+        explanation:
+            "Candida is a genus of yeast-like fungi."
+    },
+
+    {
+        id: 12,
+        subject: "Pharmacology",
+        course: "Pharmacology",
+        topic: "Medication Routes",
+        question: "Which route involves administering medication by mouth?",
+        options: [
+            "Intravenous",
+            "Oral",
+            "Intramuscular",
+            "Subcutaneous"
+        ],
+        answer: "Oral",
+        explanation:
+            "The oral route involves taking medication through the mouth."
+    },
+
+    {
+        id: 13,
+        subject: "Pharmacology",
+        course: "Pharmacology",
+        topic: "Medication Safety",
+        question: "Which of the following is an important medication safety practice?",
+        options: [
+            "Giving medication without checking the patient",
+            "Checking the medication order carefully",
+            "Guessing the dose",
+            "Ignoring allergies"
+        ],
+        answer: "Checking the medication order carefully",
+        explanation:
+            "Healthcare professionals should carefully verify medication orders and relevant patient information before administration."
+    },
+
+    {
+        id: 14,
+        subject: "Anatomy",
+        course: "Anatomy",
+        topic: "Nervous System",
+        question: "Which organ is the main control center of the nervous system?",
+        options: [
+            "Heart",
+            "Brain",
+            "Kidney",
+            "Stomach"
+        ],
+        answer: "Brain",
+        explanation:
+            "The brain is the main control center of the nervous system."
+    },
+
+    {
+        id: 15,
+        subject: "Nursing",
+        course: "Nursing",
+        topic: "Patient Care",
+        question: "What is the purpose of taking a patient's vital signs?",
+        options: [
+            "To monitor important body functions",
+            "To replace all physical examinations",
+            "To determine the patient's name",
+            "To prescribe every medication"
+        ],
+        answer: "To monitor important body functions",
+        explanation:
+            "Vital signs provide important information about a patient's physiological condition."
     }
+
 ];
+
 
 function getQuizQuestions() {
 
@@ -1110,12 +1288,11 @@ function getQuizQuestions() {
     return defaultQuestions;
 }
 
+
 let currentQuizQuestions = [];
 let currentQuizIndex = 0;
 let currentQuizScore = 0;
 let quizAnswered = false;
-
-
 // =========================================
 // RENDER QUIZ PAGE
 // =========================================
