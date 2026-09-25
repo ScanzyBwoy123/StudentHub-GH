@@ -1295,6 +1295,7 @@ let currentQuizQuestions = [];
 let currentQuizIndex = 0;
 let currentQuizScore = 0;
 let quizAnswered = false;
+    let currentQuizSubject = "All Subjects";
 // =========================================
 // RENDER QUIZ PAGE
 // =========================================
@@ -1429,7 +1430,7 @@ function renderQuiz() {
 // =========================================
 
 function startQuiz(subject = "All Subjects") {
-
+currentQuizSubject = subject;
     let questions = getQuizQuestions();
 
     if (subject !== "All Subjects") {
