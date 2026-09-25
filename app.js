@@ -1002,9 +1002,546 @@ document.addEventListener("DOMContentLoaded", () => {
     // INITIAL RENDER
     // =========================================
 
-    renderCourses();
-    renderAssignments();
-    renderTimetable();
-    updateDashboardStats();
+    // =========================================
+// QUIZ ENGINE
+// =========================================
+
+const QUIZ_KEY = "studenthub_quiz_questions";
+
+const defaultQuestions = [
+    {
+        id: 1,
+        course: "Anatomy",
+        topic: "Basic Anatomy",
+        question: "Which organ pumps blood around the body?",
+        options: [
+            "Lungs",
+            "Heart",
+            "Kidney",
+            "Liver"
+        ],
+        answer: "Heart",
+        explanation:
+            "The heart is a muscular organ that pumps blood throughout the body."
+    },
+
+    {
+        id: 2,
+        course: "Anatomy",
+        topic: "Basic Anatomy",
+        question: "What is the largest organ of the human body?",
+        options: [
+            "Heart",
+            "Liver",
+            "Skin",
+            "Brain"
+        ],
+        answer: "Skin",
+        explanation:
+            "The skin is the largest organ of the human body."
+    },
+
+    {
+        id: 3,
+        course: "Nursing",
+        topic: "Vital Signs",
+        question: "Which vital sign measures the force of blood against artery walls?",
+        options: [
+            "Temperature",
+            "Pulse",
+            "Blood pressure",
+            "Respiratory rate"
+        ],
+        answer: "Blood pressure",
+        explanation:
+            "Blood pressure measures the force of circulating blood against the walls of the arteries."
+    },
+
+    {
+        id: 4,
+        course: "Microbiology",
+        topic: "Microorganisms",
+        question: "Which microorganism is responsible for malaria?",
+        options: [
+            "Plasmodium",
+            "Staphylococcus",
+            "Candida",
+            "Influenza virus"
+        ],
+        answer: "Plasmodium",
+        explanation:
+            "Malaria is caused by parasites of the genus Plasmodium and is transmitted through infected mosquitoes."
+    },
+
+    {
+        id: 5,
+        course: "Pharmacology",
+        topic: "Medication Safety",
+        question: "Which route of administration involves giving medicine directly into a vein?",
+        options: [
+            "Oral",
+            "Intramuscular",
+            "Intravenous",
+            "Subcutaneous"
+        ],
+        answer: "Intravenous",
+        explanation:
+            "Intravenous administration delivers medication directly into a vein."
+    }
+];
+
+function getQuizQuestions() {
+
+    const saved =
+        JSON.parse(
+            localStorage.getItem(QUIZ_KEY)
+        );
+
+    if (saved && saved.length) {
+        return saved;
+    }
+
+    localStorage.setItem(
+        QUIZ_KEY,
+        JSON.stringify(defaultQuestions)
+    );
+
+    return defaultQuestions;
+}
+
+let currentQuizQuestions = [];
+let currentQuizIndex = 0;
+let currentQuizScore = 0;
+let quizAnswered = false;
+
+
+// =========================================
+// RENDER QUIZ PAGE
+// =========================================
+
+function renderQuiz() {
+
+    const container =
+        document.getElementById("quiz");
+
+    if (!container) return;
+
+    const questions =
+        getQuizQuestions();
+
+    container.innerHTML = `
+        <div class="page-header">
+
+            <div>
+                <h2>Question Bank & Quiz</h2>
+                <p>
+                    Test your knowledge and improve your
+                    academic performance.
+                </p>
+            </div>
+
+            <button
+                class="primary-btn"
+                id="startQuizBtn">
+                Start Quiz
+            </button>
+
+        </div>
+
+        <div class="quiz-intro">
+
+            <div class="quiz-intro-icon">
+                🧠
+            </div>
+
+            <div>
+                <h3>Practice Makes Progress</h3>
+
+                <p>
+                    Answer multiple-choice questions,
+                    check your answers and learn from
+                    the explanations.
+                </p>
+
+                <div class="quiz-info">
+
+                    <span>
+                        📚 ${questions.length} Questions
+                    </span>
+
+                    <span>
+                        🎯 MCQ Practice
+                    </span>
+
+                    <span>
+                        💡 Explanations
+                    </span>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div id="quizArea"></div>
+    `;
+
+    document
+        .getElementById("startQuizBtn")
+        .addEventListener(
+            "click",
+            startQuiz
+        );
+}
+
+
+// =========================================
+// START QUIZ
+// =========================================
+
+function startQuiz() {
+
+    const questions =
+        getQuizQuestions();
+
+    currentQuizQuestions =
+        [...questions]
+        .sort(() => Math.random() - 0.5)
+        .slice(0, Math.min(10, questions.length));
+
+    currentQuizIndex = 0;
+    currentQuizScore = 0;
+    quizAnswered = false;
+
+    showQuizQuestion();
+}
+
+
+// =========================================
+// SHOW QUESTION
+// =========================================
+
+function showQuizQuestion() {
+
+    const area =
+        document.getElementById("quizArea");
+
+    if (!area) return;
+
+    const question =
+        currentQuizQuestions[currentQuizIndex];
+
+    if (!question) {
+        showQuizResult();
+        return;
+    }
+
+    quizAnswered = false;
+
+    const progress =
+        currentQuizIndex + 1;
+
+    const total =
+        currentQuizQuestions.length;
+
+    area.innerHTML = `
+
+        <div class="quiz-card">
+
+            <div class="quiz-progress">
+
+                <span>
+                    Question ${progress} of ${total}
+                </span>
+
+                <div class="quiz-progress-bar">
+                    <div
+                        style="
+                            width:${(progress / total) * 100}%;
+                        ">
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="quiz-question-meta">
+
+                <span>
+                    ${escapeHTML(question.course)}
+                </span>
+
+                <span>
+                    ${escapeHTML(question.topic)}
+                </span>
+
+            </div>
+
+            <h3 class="quiz-question">
+                ${escapeHTML(question.question)}
+            </h3>
+
+            <div class="quiz-options">
+
+                ${question.options.map(
+                    (option, index) => `
+                        <button
+                            class="quiz-option"
+                            data-option="${escapeHTML(option)}">
+
+                            <span class="option-letter">
+                                ${String.fromCharCode(65 + index)}
+                            </span>
+
+                            <span>
+                                ${escapeHTML(option)}
+                            </span>
+
+                        </button>
+                    `
+                ).join("")}
+
+            </div>
+
+            <div
+                id="quizFeedback"
+                class="quiz-feedback">
+            </div>
+
+        </div>
+    `;
+
+    document
+        .querySelectorAll(".quiz-option")
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    checkQuizAnswer(
+                        button.dataset.option
+                    );
+
+                }
+            );
+
+        });
+}
+
+
+// =========================================
+// CHECK ANSWER
+// =========================================
+
+function checkQuizAnswer(selectedAnswer) {
+
+    if (quizAnswered) return;
+
+    quizAnswered = true;
+
+    const question =
+        currentQuizQuestions[currentQuizIndex];
+
+    const feedback =
+        document.getElementById(
+            "quizFeedback"
+        );
+
+    const optionButtons =
+        document.querySelectorAll(
+            ".quiz-option"
+        );
+
+    optionButtons.forEach(button => {
+
+        button.disabled = true;
+
+        if (
+            button.dataset.option ===
+            question.answer
+        ) {
+            button.classList.add(
+                "correct"
+            );
+        }
+
+        if (
+            button.dataset.option ===
+            selectedAnswer &&
+            selectedAnswer !== question.answer
+        ) {
+            button.classList.add(
+                "incorrect"
+            );
+        }
+
+    });
+
+    if (
+        selectedAnswer ===
+        question.answer
+    ) {
+
+        currentQuizScore++;
+
+        feedback.innerHTML = `
+            <div class="quiz-feedback-success">
+
+                <strong>Correct! 🎉</strong>
+
+                <p>
+                    ${escapeHTML(question.explanation)}
+                </p>
+
+            </div>
+
+            <button
+                class="primary-btn quiz-next-btn">
+                ${
+                    currentQuizIndex + 1 <
+                    currentQuizQuestions.length
+                    ? "Next Question"
+                    : "See Results"
+                }
+            </button>
+        `;
+
+    } else {
+
+        feedback.innerHTML = `
+            <div class="quiz-feedback-error">
+
+                <strong>Not quite.</strong>
+
+                <p>
+                    <strong>
+                        Correct answer:
+                    </strong>
+                    ${escapeHTML(question.answer)}
+                </p>
+
+                <p>
+                    ${escapeHTML(question.explanation)}
+                </p>
+
+            </div>
+
+            <button
+                class="primary-btn quiz-next-btn">
+                ${
+                    currentQuizIndex + 1 <
+                    currentQuizQuestions.length
+                    ? "Next Question"
+                    : "See Results"
+                }
+            </button>
+        `;
+
+    }
+
+    document
+        .querySelector(".quiz-next-btn")
+        .addEventListener(
+            "click",
+            () => {
+
+                currentQuizIndex++;
+
+                showQuizQuestion();
+
+            }
+        );
+}
+
+
+// =========================================
+// QUIZ RESULT
+// =========================================
+
+function showQuizResult() {
+
+    const area =
+        document.getElementById(
+            "quizArea"
+        );
+
+    if (!area) return;
+
+    const total =
+        currentQuizQuestions.length;
+
+    const percentage =
+        total === 0
+        ? 0
+        : Math.round(
+            (currentQuizScore / total) * 100
+        );
+
+    let message =
+        "Keep practicing! 💪";
+
+    if (percentage >= 80) {
+        message =
+            "Excellent work! 🎉";
+    } else if (percentage >= 60) {
+        message =
+            "Good job! Keep improving. 👍";
+    }
+
+    area.innerHTML = `
+
+        <div class="quiz-result">
+
+            <div class="quiz-result-icon">
+                🏆
+            </div>
+
+            <h2>
+                ${message}
+            </h2>
+
+            <p>
+                You scored
+                <strong>
+                    ${currentQuizScore}
+                </strong>
+                out of
+                <strong>
+                    ${total}
+                </strong>
+            </p>
+
+            <div class="quiz-score">
+                ${percentage}%
+            </div>
+
+            <button
+                class="primary-btn"
+                id="restartQuizBtn">
+                Try Again
+            </button>
+
+        </div>
+    `;
+
+    document
+        .getElementById(
+            "restartQuizBtn"
+        )
+        .addEventListener(
+            "click",
+            startQuiz
+        );
+}
+
+
+// =========================================
+// INITIAL RENDER
+// =========================================
+
+renderCourses();
+renderAssignments();
+renderTimetable();
+updateDashboardStats();
+renderQuiz();
 
 });
