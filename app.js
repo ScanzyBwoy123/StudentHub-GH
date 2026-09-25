@@ -125,36 +125,56 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =========================================
-       StudentHub Storage
+       Storage
        -----------------------------------------
-       We use localStorage for now.
+       Everything currently uses localStorage.
        No database or paid service required.
     ========================================= */
 
-    const STORAGE_KEY = "studenthub_courses";
+    const COURSE_STORAGE_KEY =
+        "studenthub_courses";
 
-    function getCourses() {
+    const ASSIGNMENT_STORAGE_KEY =
+        "studenthub_assignments";
 
-        const savedCourses =
-            localStorage.getItem(STORAGE_KEY);
 
-        if (!savedCourses) {
+    /* =========================================
+       Generic Storage Helpers
+    ========================================= */
+
+    function getStoredData(key) {
+
+        const savedData =
+            localStorage.getItem(key);
+
+        if (!savedData) {
             return [];
         }
 
         try {
-            return JSON.parse(savedCourses);
+
+            const parsedData =
+                JSON.parse(savedData);
+
+            return Array.isArray(parsedData)
+                ? parsedData
+                : [];
+
         } catch (error) {
+
             return [];
+
         }
     }
 
-    function saveCourses(courses) {
+
+    function saveStoredData(key, data) {
 
         localStorage.setItem(
-            STORAGE_KEY,
-            JSON.stringify(courses)
+            key,
+            JSON.stringify(data)
         );
+
     }
 
 
@@ -162,8 +182,28 @@ document.addEventListener("DOMContentLoaded", () => {
        Courses
     ========================================= */
 
+    function getCourses() {
+
+        return getStoredData(
+            COURSE_STORAGE_KEY
+        );
+
+    }
+
+
+    function saveCourses(courses) {
+
+        saveStoredData(
+            COURSE_STORAGE_KEY,
+            courses
+        );
+
+    }
+
+
     const coursesPage =
         document.getElementById("courses");
+
 
     if (coursesPage) {
 
@@ -189,6 +229,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="course-toolbar">
 
                 <div>
+
                     <strong id="courseCount">
                         0 Courses
                     </strong>
@@ -196,11 +237,14 @@ document.addEventListener("DOMContentLoaded", () => {
                     <span>
                         in your workspace
                     </span>
+
                 </div>
+
 
                 <button
                     class="primary-button"
                     id="addCourseButton"
+                    type="button"
                 >
                     + Add Course
                 </button>
@@ -234,6 +278,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <button
                     class="primary-button"
                     id="emptyAddCourseButton"
+                    type="button"
                 >
                     + Add Course
                 </button>
@@ -267,9 +312,11 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        const courses = getCourses();
+        const courses =
+            getCourses();
 
         coursesGrid.innerHTML = "";
+
 
         if (courseCount) {
 
@@ -279,6 +326,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         ? "Course"
                         : "Courses"
                 }`;
+
         }
 
 
@@ -291,10 +339,12 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             return;
+
         }
 
 
         coursesGrid.style.display = "grid";
+
 
         if (coursesEmpty) {
             coursesEmpty.style.display = "none";
@@ -306,7 +356,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const card =
                 document.createElement("div");
 
-            card.className = "course-card";
+            card.className =
+                "course-card";
+
 
             card.innerHTML = `
 
@@ -314,31 +366,40 @@ document.addEventListener("DOMContentLoaded", () => {
                     📚
                 </div>
 
+
                 <div class="course-content">
 
                     <span class="course-code">
                         ${escapeHTML(course.code)}
                     </span>
 
+
                     <h3>
                         ${escapeHTML(course.name)}
                     </h3>
 
+
                     <p>
-                        ${escapeHTML(course.description || "No description added.")}
+                        ${escapeHTML(
+                            course.description ||
+                            "No description added."
+                        )}
                     </p>
 
                 </div>
+
 
                 <button
                     class="delete-course"
                     data-index="${index}"
                     title="Delete course"
+                    type="button"
                 >
                     ×
                 </button>
 
             `;
+
 
             coursesGrid.appendChild(card);
 
@@ -349,14 +410,19 @@ document.addEventListener("DOMContentLoaded", () => {
             .querySelectorAll(".delete-course")
             .forEach((button) => {
 
-                button.addEventListener("click", () => {
+                button.addEventListener(
+                    "click",
+                    () => {
 
-                    const index =
-                        Number(button.dataset.index);
+                        const index =
+                            Number(
+                                button.dataset.index
+                            );
 
-                    deleteCourse(index);
+                        deleteCourse(index);
 
-                });
+                    }
+                );
 
             });
 
@@ -366,7 +432,10 @@ document.addEventListener("DOMContentLoaded", () => {
     function addCourse() {
 
         const name =
-            prompt("Enter the course or subject name:");
+            prompt(
+                "Enter the course or subject name:"
+            );
+
 
         if (!name || !name.trim()) {
             return;
@@ -374,19 +443,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         const code =
-            prompt("Enter the course code (optional):");
+            prompt(
+                "Enter the course code (optional):"
+            );
 
 
         const description =
-            prompt("Add a short description (optional):");
+            prompt(
+                "Add a short description (optional):"
+            );
 
 
-        const courses = getCourses();
+        const courses =
+            getCourses();
 
 
         courses.push({
 
-            name: name.trim(),
+            name:
+                name.trim(),
 
             code:
                 code && code.trim()
@@ -412,7 +487,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function deleteCourse(index) {
 
-        const courses = getCourses();
+        const courses =
+            getCourses();
+
 
         if (!courses[index]) {
             return;
@@ -441,22 +518,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    function escapeHTML(value) {
-
-        return String(value)
-
-            .replaceAll("&", "&amp;")
-
-            .replaceAll("<", "&lt;")
-
-            .replaceAll(">", "&gt;")
-
-            .replaceAll('"', "&quot;")
-
-            .replaceAll("'", "&#039;");
-    }
-
-
     if (addCourseButton) {
 
         addCourseButton.addEventListener(
@@ -478,6 +539,516 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /* =========================================
+       Assignments
+    ========================================= */
+
+    function getAssignments() {
+
+        return getStoredData(
+            ASSIGNMENT_STORAGE_KEY
+        );
+
+    }
+
+
+    function saveAssignments(assignments) {
+
+        saveStoredData(
+            ASSIGNMENT_STORAGE_KEY,
+            assignments
+        );
+
+    }
+
+
+    const assignmentsPage =
+        document.getElementById("assignments");
+
+
+    if (assignmentsPage) {
+
+        assignmentsPage.innerHTML = `
+
+            <div class="page-heading">
+
+                <span class="eyebrow">
+                    ACADEMICS
+                </span>
+
+                <h2>
+                    My Assignments
+                </h2>
+
+                <p>
+                    Keep track of assignments, deadlines and completed work.
+                </p>
+
+            </div>
+
+
+            <div class="course-toolbar">
+
+                <div>
+
+                    <strong id="assignmentCount">
+                        0 Assignments
+                    </strong>
+
+                    <span>
+                        in your workspace
+                    </span>
+
+                </div>
+
+
+                <button
+                    class="primary-button"
+                    id="addAssignmentButton"
+                    type="button"
+                >
+                    + Add Assignment
+                </button>
+
+            </div>
+
+
+            <div
+                class="assignments-list"
+                id="assignmentsList"
+            ></div>
+
+
+            <div
+                class="empty-page"
+                id="assignmentsEmpty"
+            >
+
+                <div class="large-icon">
+                    📝
+                </div>
+
+                <h3>
+                    No assignments yet
+                </h3>
+
+                <p>
+                    Add your first assignment to start tracking your academic work.
+                </p>
+
+                <button
+                    class="primary-button"
+                    id="emptyAddAssignmentButton"
+                    type="button"
+                >
+                    + Add Assignment
+                </button>
+
+            </div>
+
+        `;
+
+    }
+
+
+    const assignmentsList =
+        document.getElementById("assignmentsList");
+
+    const assignmentsEmpty =
+        document.getElementById("assignmentsEmpty");
+
+    const assignmentCount =
+        document.getElementById("assignmentCount");
+
+    const addAssignmentButton =
+        document.getElementById(
+            "addAssignmentButton"
+        );
+
+    const emptyAddAssignmentButton =
+        document.getElementById(
+            "emptyAddAssignmentButton"
+        );
+
+
+    function renderAssignments() {
+
+        if (!assignmentsList) {
+            return;
+        }
+
+
+        const assignments =
+            getAssignments();
+
+
+        assignmentsList.innerHTML = "";
+
+
+        if (assignmentCount) {
+
+            assignmentCount.textContent =
+                `${assignments.length} ${
+                    assignments.length === 1
+                        ? "Assignment"
+                        : "Assignments"
+                }`;
+
+        }
+
+
+        if (assignments.length === 0) {
+
+            assignmentsList.style.display =
+                "none";
+
+
+            if (assignmentsEmpty) {
+
+                assignmentsEmpty.style.display =
+                    "flex";
+
+            }
+
+            return;
+
+        }
+
+
+        assignmentsList.style.display =
+            "grid";
+
+
+        if (assignmentsEmpty) {
+
+            assignmentsEmpty.style.display =
+                "none";
+
+        }
+
+
+        assignments.forEach(
+            (assignment, index) => {
+
+                const card =
+                    document.createElement("div");
+
+
+                card.className =
+                    "assignment-card";
+
+
+                const status =
+                    assignment.completed
+                        ? "Completed"
+                        : "Pending";
+
+
+                card.innerHTML = `
+
+                    <div class="assignment-main">
+
+                        <div class="assignment-icon">
+                            📝
+                        </div>
+
+
+                        <div>
+
+                            <span class="assignment-course">
+                                ${escapeHTML(
+                                    assignment.course ||
+                                    "General"
+                                )}
+                            </span>
+
+
+                            <h3>
+                                ${escapeHTML(
+                                    assignment.title
+                                )}
+                            </h3>
+
+
+                            <p>
+                                ${escapeHTML(
+                                    assignment.description ||
+                                    "No description added."
+                                )}
+                            </p>
+
+
+                            <small>
+                                Due:
+                                ${escapeHTML(
+                                    assignment.dueDate ||
+                                    "No date"
+                                )}
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="assignment-actions">
+
+                        <span
+                            class="assignment-status ${
+                                assignment.completed
+                                    ? "completed"
+                                    : "pending"
+                            }"
+                        >
+                            ${status}
+                        </span>
+
+
+                        <button
+                            class="complete-assignment"
+                            data-index="${index}"
+                            type="button"
+                        >
+                            ${
+                                assignment.completed
+                                    ? "Mark Pending"
+                                    : "Mark Complete"
+                            }
+                        </button>
+
+
+                        <button
+                            class="delete-assignment"
+                            data-index="${index}"
+                            type="button"
+                            title="Delete assignment"
+                        >
+                            ×
+                        </button>
+
+                    </div>
+
+                `;
+
+
+                assignmentsList.appendChild(card);
+
+            }
+        );
+
+
+        document
+            .querySelectorAll(
+                ".complete-assignment"
+            )
+            .forEach((button) => {
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        const index =
+                            Number(
+                                button.dataset.index
+                            );
+
+                        toggleAssignment(
+                            index
+                        );
+
+                    }
+                );
+
+            });
+
+
+        document
+            .querySelectorAll(
+                ".delete-assignment"
+            )
+            .forEach((button) => {
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        const index =
+                            Number(
+                                button.dataset.index
+                            );
+
+                        deleteAssignment(
+                            index
+                        );
+
+                    }
+                );
+
+            });
+
+    }
+
+
+    function addAssignment() {
+
+        const title =
+            prompt(
+                "Enter the assignment title:"
+            );
+
+
+        if (!title || !title.trim()) {
+            return;
+        }
+
+
+        const course =
+            prompt(
+                "Enter the course or subject:"
+            );
+
+
+        const dueDate =
+            prompt(
+                "Enter the due date (example: 30 Sep 2026):"
+            );
+
+
+        const description =
+            prompt(
+                "Add a short description (optional):"
+            );
+
+
+        const assignments =
+            getAssignments();
+
+
+        assignments.push({
+
+            title:
+                title.trim(),
+
+            course:
+                course && course.trim()
+                    ? course.trim()
+                    : "General",
+
+            dueDate:
+                dueDate && dueDate.trim()
+                    ? dueDate.trim()
+                    : "No date",
+
+            description:
+                description
+                    ? description.trim()
+                    : "",
+
+            completed:
+                false
+
+        });
+
+
+        saveAssignments(
+            assignments
+        );
+
+
+        renderAssignments();
+
+        updateDashboardStats();
+
+    }
+
+
+    function toggleAssignment(index) {
+
+        const assignments =
+            getAssignments();
+
+
+        if (!assignments[index]) {
+            return;
+        }
+
+
+        assignments[index].completed =
+            !assignments[index].completed;
+
+
+        saveAssignments(
+            assignments
+        );
+
+
+        renderAssignments();
+
+        updateDashboardStats();
+
+    }
+
+
+    function deleteAssignment(index) {
+
+        const assignments =
+            getAssignments();
+
+
+        if (!assignments[index]) {
+            return;
+        }
+
+
+        const confirmed =
+            confirm(
+                `Delete "${assignments[index].title}"?`
+            );
+
+
+        if (!confirmed) {
+            return;
+        }
+
+
+        assignments.splice(
+            index,
+            1
+        );
+
+
+        saveAssignments(
+            assignments
+        );
+
+
+        renderAssignments();
+
+        updateDashboardStats();
+
+    }
+
+
+    if (addAssignmentButton) {
+
+        addAssignmentButton.addEventListener(
+            "click",
+            addAssignment
+        );
+
+    }
+
+
+    if (emptyAddAssignmentButton) {
+
+        emptyAddAssignmentButton.addEventListener(
+            "click",
+            addAssignment
+        );
+
+    }
+
+
+    /* =========================================
        Dashboard Statistics
     ========================================= */
 
@@ -486,14 +1057,70 @@ document.addEventListener("DOMContentLoaded", () => {
         const courses =
             getCourses();
 
+
+        const assignments =
+            getAssignments();
+
+
         const statCards =
-            document.querySelectorAll(".stat-card strong");
+            document.querySelectorAll(
+                ".stat-card strong"
+            );
+
 
         if (statCards.length >= 1) {
 
             statCards[0].textContent =
                 courses.length;
+
         }
+
+
+        if (statCards.length >= 2) {
+
+            statCards[1].textContent =
+                assignments.filter(
+                    (assignment) =>
+                        !assignment.completed
+                ).length;
+
+        }
+
+    }
+
+
+    /* =========================================
+       Escape HTML
+    ========================================= */
+
+    function escapeHTML(value) {
+
+        return String(value)
+
+            .replaceAll(
+                "&",
+                "&amp;"
+            )
+
+            .replaceAll(
+                "<",
+                "&lt;"
+            )
+
+            .replaceAll(
+                ">",
+                "&gt;"
+            )
+
+            .replaceAll(
+                '"',
+                "&quot;"
+            )
+
+            .replaceAll(
+                "'",
+                "&#039;"
+            );
 
     }
 
@@ -503,6 +1130,18 @@ document.addEventListener("DOMContentLoaded", () => {
     ========================================= */
 
     renderCourses();
+
+
+    /* =========================================
+       Start Assignments
+    ========================================= */
+
+    renderAssignments();
+
+
+    /* =========================================
+       Update Dashboard
+    ========================================= */
 
     updateDashboardStats();
 
