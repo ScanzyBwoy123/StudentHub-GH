@@ -22,8 +22,8 @@ jobs:
           version: latest
 
       - name: Deploy generate-questions
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
         run: |
           supabase functions deploy generate-questions \
             --project-ref gwosailuqdsvttebrhen
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
