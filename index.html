@@ -13,17 +13,30 @@
 
     <div class="app">
 
-        <!-- Sidebar -->
+        <!-- =========================================
+             SIDEBAR
+        ========================================== -->
         <aside class="sidebar">
 
             <div class="brand">
-                <div class="brand-icon">🎓</div>
+
+                <div class="brand-icon">
+                    🎓
+                </div>
 
                 <div>
                     <h1>StudentHub</h1>
                     <span>GH</span>
                 </div>
+
             </div>
+
+
+            <div class="sidebar-status">
+                <span class="pulse-light"></span>
+                <span>Platform Online</span>
+            </div>
+
 
             <nav class="navigation">
 
@@ -64,6 +77,7 @@
 
             </nav>
 
+
             <div class="sidebar-bottom">
 
                 <button class="nav-item" data-page="profile">
@@ -71,9 +85,18 @@
                     Profile
                 </button>
 
+
                 <div class="free-badge">
-                    <strong>StudentHub GH</strong>
-                    <small>Built for students 🇬🇭</small>
+
+                    <div class="premium-status">
+                        <span class="pulse-light"></span>
+                        <strong>StudentHub GH</strong>
+                    </div>
+
+                    <small>
+                        Built for students 🇬🇭
+                    </small>
+
                 </div>
 
             </div>
@@ -81,22 +104,30 @@
         </aside>
 
 
-        <!-- Main Content -->
+        <!-- =========================================
+             MAIN CONTENT
+        ========================================== -->
         <main class="main-content">
 
-            <!-- Top Bar -->
+
+            <!-- TOP BAR -->
             <header class="topbar">
 
                 <div class="mobile-brand">
                     🎓 StudentHub GH
                 </div>
 
+
                 <div class="topbar-right">
 
-                    <button class="notification-btn" title="Notifications">
+                    <button
+                        class="notification-btn notification-pulse"
+                        title="Notifications"
+                    >
                         🔔
                         <span class="notification-dot"></span>
                     </button>
+
 
                     <div class="user-mini">
 
@@ -116,109 +147,237 @@
             </header>
 
 
-            <!-- Pages -->
-
-            <!-- Dashboard -->
+            <!-- =========================================
+                 DASHBOARD
+            ========================================== -->
             <section class="page active" id="dashboard">
 
-                <div class="welcome">
 
-                    <div>
-                        <span class="eyebrow">STUDENT DASHBOARD</span>
+                <!-- HERO -->
+                <div class="dashboard-hero">
+
+                    <div class="hero-content">
+
+                        <div class="hero-status">
+                            <span class="pulse-light"></span>
+                            <span>STUDENT WORKSPACE</span>
+                        </div>
 
                         <h2>
-                            Welcome back, Hacker Pro! 👋
+                            Welcome back,
+                            <span>Hacker Pro!</span> 👋
                         </h2>
 
                         <p>
-                            Stay organized, keep learning, and stay ahead of your studies.
+                            Organize your studies, track your progress,
+                            prepare for exams, and stay ahead.
                         </p>
+
+
+                        <div class="hero-actions">
+
+                            <button
+                                class="hero-button primary"
+                                data-page="courses"
+                            >
+                                📚 Explore Courses
+                            </button>
+
+                            <button
+                                class="hero-button secondary"
+                                data-page="timetable"
+                            >
+                                📅 View Timetable
+                            </button>
+
+                        </div>
+
                     </div>
 
-                    <div class="date-card">
-                        <span>Today</span>
-                        <strong id="currentDate">Loading...</strong>
+
+                    <div class="hero-visual">
+
+                        <div class="hero-glow"></div>
+
+                        <div class="hero-icon">
+                            🎓
+                        </div>
+
+                        <div class="floating-card floating-card-one">
+                            📚 Learn
+                        </div>
+
+                        <div class="floating-card floating-card-two">
+                            🎯 Improve
+                        </div>
+
+                        <div class="floating-card floating-card-three">
+                            🏆 Achieve
+                        </div>
+
                     </div>
 
                 </div>
 
 
-                <!-- Statistics -->
+                <!-- DATE -->
+                <div class="dashboard-date-row">
+
+                    <div class="date-card">
+
+                        <span>Today</span>
+
+                        <strong id="currentDate">
+                            Loading...
+                        </strong>
+
+                    </div>
+
+                    <div class="live-card">
+
+                        <span class="pulse-light"></span>
+
+                        <div>
+                            <strong>You're on track</strong>
+                            <small>Keep building your student workspace.</small>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =========================================
+                     STATISTICS
+                ========================================== -->
                 <div class="stats-grid">
 
-                    <div class="stat-card">
-                        <div class="stat-icon">📚</div>
+                    <div class="stat-card stat-courses">
+
+                        <div class="stat-icon">
+                            📚
+                        </div>
 
                         <div>
                             <span>Courses</span>
                             <strong>0</strong>
+                            <small>Your active courses</small>
                         </div>
+
                     </div>
 
-                    <div class="stat-card">
-                        <div class="stat-icon">📝</div>
+
+                    <div class="stat-card stat-assignments">
+
+                        <div class="stat-icon">
+                            📝
+                        </div>
 
                         <div>
                             <span>Assignments</span>
                             <strong>0</strong>
+                            <small>Tasks remaining</small>
                         </div>
+
                     </div>
 
-                    <div class="stat-card">
-                        <div class="stat-icon">📅</div>
+
+                    <div class="stat-card stat-classes">
+
+                        <div class="stat-icon">
+                            📅
+                        </div>
 
                         <div>
                             <span>Classes Today</span>
                             <strong>0</strong>
+                            <small>Today's schedule</small>
                         </div>
+
                     </div>
 
-                    <div class="stat-card">
-                        <div class="stat-icon">🎯</div>
+
+                    <div class="stat-card stat-gpa">
+
+                        <div class="stat-icon">
+                            🎯
+                        </div>
 
                         <div>
                             <span>Current GPA</span>
                             <strong>0.00</strong>
+                            <small>Academic performance</small>
                         </div>
+
                     </div>
 
                 </div>
 
 
-                <!-- Dashboard Grid -->
+                <!-- =========================================
+                     MAIN DASHBOARD GRID
+                ========================================== -->
                 <div class="dashboard-grid">
 
-                    <!-- Quick Actions -->
-                    <div class="dashboard-card">
+
+                    <!-- QUICK ACTIONS -->
+                    <div class="dashboard-card quick-actions-card">
 
                         <div class="card-header">
+
                             <div>
-                                <span class="card-label">QUICK ACTIONS</span>
-                                <h3>What do you want to do?</h3>
+                                <span class="card-label">
+                                    QUICK ACTIONS
+                                </span>
+
+                                <h3>
+                                    What do you want to do?
+                                </h3>
                             </div>
+
+                            <span class="card-light">
+                                <span class="pulse-light"></span>
+                            </span>
+
                         </div>
+
 
                         <div class="quick-actions">
 
-                            <button class="action-card" data-page="courses">
+                            <button
+                                class="action-card"
+                                data-page="courses"
+                            >
                                 <span>📚</span>
                                 <strong>View Courses</strong>
                                 <small>Manage your courses</small>
                             </button>
 
-                            <button class="action-card" data-page="assignments">
+
+                            <button
+                                class="action-card"
+                                data-page="assignments"
+                            >
                                 <span>📝</span>
                                 <strong>Assignments</strong>
                                 <small>Track your work</small>
                             </button>
 
-                            <button class="action-card" data-page="gpa">
+
+                            <button
+                                class="action-card"
+                                data-page="gpa"
+                            >
                                 <span>🧮</span>
                                 <strong>Calculate GPA</strong>
                                 <small>Check your GPA</small>
                             </button>
 
-                            <button class="action-card" data-page="timetable">
+
+                            <button
+                                class="action-card"
+                                data-page="timetable"
+                            >
                                 <span>📅</span>
                                 <strong>Timetable</strong>
                                 <small>View your classes</small>
@@ -229,21 +388,30 @@
                     </div>
 
 
-                    <!-- Upcoming -->
+                    <!-- UPCOMING -->
                     <div class="dashboard-card">
 
                         <div class="card-header">
 
                             <div>
-                                <span class="card-label">UPCOMING</span>
-                                <h3>Important dates</h3>
+                                <span class="card-label">
+                                    UPCOMING
+                                </span>
+
+                                <h3>
+                                    Important dates
+                                </h3>
                             </div>
 
-                            <button class="text-button" data-page="exams">
+                            <button
+                                class="text-button"
+                                data-page="exams"
+                            >
                                 View all
                             </button>
 
                         </div>
+
 
                         <div class="empty-state">
 
@@ -251,13 +419,19 @@
                                 📌
                             </div>
 
-                            <h4>No upcoming events</h4>
+                            <h4>
+                                No upcoming events
+                            </h4>
 
                             <p>
-                                Add your exams and important dates to keep track of them.
+                                Add your exams and important dates
+                                to keep track of them.
                             </p>
 
-                            <button class="primary-button" data-page="exams">
+                            <button
+                                class="primary-button"
+                                data-page="exams"
+                            >
                                 Add Exam
                             </button>
 
@@ -268,17 +442,135 @@
                 </div>
 
 
-                <!-- Getting Started -->
+                <!-- =========================================
+                     LEARNING PREVIEW
+                ========================================== -->
+                <div class="learning-preview">
+
+                    <div class="learning-preview-content">
+
+                        <div class="hero-status">
+                            <span class="ai-light"></span>
+                            <span>SMART LEARNING</span>
+                        </div>
+
+                        <h3>
+                            Your student journey starts here.
+                        </h3>
+
+                        <p>
+                            Learn smarter, organize your academic life,
+                            practice questions, and monitor your progress
+                            from one workspace.
+                        </p>
+
+
+                        <div class="learning-points">
+
+                            <span>✓ Study materials</span>
+                            <span>✓ Practice questions</span>
+                            <span>✓ Academic tracking</span>
+                            <span>✓ GPA & CGPA</span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="learning-preview-visual">
+
+                        <div class="mcq-window">
+
+                            <div class="mcq-top">
+
+                                <span>
+                                    MCQ PRACTICE
+                                </span>
+
+                                <span class="mcq-live">
+                                    <span class="pulse-light"></span>
+                                    LIVE
+                                </span>
+
+                            </div>
+
+                            <h4>
+                                Which study habit can improve
+                                long-term retention?
+                            </h4>
+
+                            <div class="mcq-option">
+                                A. Cramming everything overnight
+                            </div>
+
+                            <div class="mcq-option active">
+                                B. Spaced repetition
+                            </div>
+
+                            <div class="mcq-option">
+                                C. Avoiding revision
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =========================================
+                     PREMIUM PREVIEW
+                ========================================== -->
+                <div class="premium-preview premium-glow">
+
+                    <div class="premium-icon">
+                        💎
+                    </div>
+
+                    <div class="premium-content">
+
+                        <div class="premium-title">
+                            <span class="pulse-light"></span>
+                            <span>PREMIUM LEARNING</span>
+                        </div>
+
+                        <h3>
+                            Unlock more ways to study.
+                        </h3>
+
+                        <p>
+                            Advanced practice, smarter learning tools,
+                            deeper academic insights, and more.
+                        </p>
+
+                    </div>
+
+                    <button class="premium-button">
+                        Coming Soon
+                    </button>
+
+                </div>
+
+
+                <!-- =========================================
+                     GETTING STARTED
+                ========================================== -->
                 <div class="dashboard-card getting-started">
 
                     <div class="card-header">
 
                         <div>
-                            <span class="card-label">GETTING STARTED</span>
-                            <h3>Build your student workspace</h3>
+                            <span class="card-label">
+                                GETTING STARTED
+                            </span>
+
+                            <h3>
+                                Build your student workspace
+                            </h3>
                         </div>
 
                     </div>
+
 
                     <div class="progress-container">
 
@@ -293,33 +585,70 @@
 
                     </div>
 
+
                     <div class="setup-list">
 
                         <div class="setup-item">
+
                             <span>1</span>
+
                             <div>
-                                <strong>Add your courses</strong>
-                                <small>Start by adding the subjects you are studying.</small>
+                                <strong>
+                                    Add your courses
+                                </strong>
+
+                                <small>
+                                    Start by adding the subjects
+                                    you are studying.
+                                </small>
                             </div>
-                            <button data-page="courses">Start</button>
+
+                            <button data-page="courses">
+                                Start
+                            </button>
+
                         </div>
 
+
                         <div class="setup-item">
+
                             <span>2</span>
+
                             <div>
-                                <strong>Build your timetable</strong>
-                                <small>Keep your weekly classes organized.</small>
+                                <strong>
+                                    Build your timetable
+                                </strong>
+
+                                <small>
+                                    Keep your weekly classes organized.
+                                </small>
                             </div>
-                            <button data-page="timetable">Start</button>
+
+                            <button data-page="timetable">
+                                Start
+                            </button>
+
                         </div>
 
+
                         <div class="setup-item">
+
                             <span>3</span>
+
                             <div>
-                                <strong>Add your exams</strong>
-                                <small>Never lose track of an important exam.</small>
+                                <strong>
+                                    Add your exams
+                                </strong>
+
+                                <small>
+                                    Never lose track of an important exam.
+                                </small>
                             </div>
-                            <button data-page="exams">Start</button>
+
+                            <button data-page="exams">
+                                Start
+                            </button>
+
                         </div>
 
                     </div>
@@ -329,20 +658,37 @@
             </section>
 
 
-            <!-- Courses -->
+            <!-- =========================================
+                 COURSES
+            ========================================== -->
             <section class="page" id="courses">
 
                 <div class="page-heading">
-                    <span class="eyebrow">ACADEMICS</span>
-                    <h2>My Courses</h2>
-                    <p>Manage the courses and subjects you are studying.</p>
+
+                    <span class="eyebrow">
+                        ACADEMICS
+                    </span>
+
+                    <h2>
+                        My Courses
+                    </h2>
+
+                    <p>
+                        Manage the courses and subjects you are studying.
+                    </p>
+
                 </div>
+
 
                 <div class="empty-page">
 
-                    <div class="large-icon">📚</div>
+                    <div class="large-icon">
+                        📚
+                    </div>
 
-                    <h3>No courses yet</h3>
+                    <h3>
+                        No courses yet
+                    </h3>
 
                     <p>
                         Your courses will appear here once you add them.
@@ -357,20 +703,37 @@
             </section>
 
 
-            <!-- Assignments -->
+            <!-- =========================================
+                 ASSIGNMENTS
+            ========================================== -->
             <section class="page" id="assignments">
 
                 <div class="page-heading">
-                    <span class="eyebrow">ACADEMICS</span>
-                    <h2>Assignments</h2>
-                    <p>Keep track of assignments and deadlines.</p>
+
+                    <span class="eyebrow">
+                        ACADEMICS
+                    </span>
+
+                    <h2>
+                        Assignments
+                    </h2>
+
+                    <p>
+                        Keep track of assignments and deadlines.
+                    </p>
+
                 </div>
+
 
                 <div class="empty-page">
 
-                    <div class="large-icon">📝</div>
+                    <div class="large-icon">
+                        📝
+                    </div>
 
-                    <h3>No assignments yet</h3>
+                    <h3>
+                        No assignments yet
+                    </h3>
 
                     <p>
                         Add assignments here so you never miss a deadline.
@@ -385,20 +748,37 @@
             </section>
 
 
-            <!-- Timetable -->
+            <!-- =========================================
+                 TIMETABLE
+            ========================================== -->
             <section class="page" id="timetable">
 
                 <div class="page-heading">
-                    <span class="eyebrow">SCHEDULE</span>
-                    <h2>My Timetable</h2>
-                    <p>Organize your weekly class schedule.</p>
+
+                    <span class="eyebrow">
+                        SCHEDULE
+                    </span>
+
+                    <h2>
+                        My Timetable
+                    </h2>
+
+                    <p>
+                        Organize your weekly class schedule.
+                    </p>
+
                 </div>
+
 
                 <div class="empty-page">
 
-                    <div class="large-icon">📅</div>
+                    <div class="large-icon">
+                        📅
+                    </div>
 
-                    <h3>Your timetable is empty</h3>
+                    <h3>
+                        Your timetable is empty
+                    </h3>
 
                     <p>
                         Add your classes to build your weekly timetable.
@@ -413,20 +793,37 @@
             </section>
 
 
-            <!-- GPA -->
+            <!-- =========================================
+                 GPA
+            ========================================== -->
             <section class="page" id="gpa">
 
                 <div class="page-heading">
-                    <span class="eyebrow">ACADEMICS</span>
-                    <h2>GPA Calculator</h2>
-                    <p>Calculate and track your academic performance.</p>
+
+                    <span class="eyebrow">
+                        ACADEMICS
+                    </span>
+
+                    <h2>
+                        GPA Calculator
+                    </h2>
+
+                    <p>
+                        Calculate and track your academic performance.
+                    </p>
+
                 </div>
+
 
                 <div class="empty-page">
 
-                    <div class="large-icon">🧮</div>
+                    <div class="large-icon">
+                        🧮
+                    </div>
 
-                    <h3>GPA Calculator</h3>
+                    <h3>
+                        GPA Calculator
+                    </h3>
 
                     <p>
                         Your GPA calculator will be available here.
@@ -441,23 +838,41 @@
             </section>
 
 
-            <!-- Exams -->
+            <!-- =========================================
+                 EXAMS
+            ========================================== -->
             <section class="page" id="exams">
 
                 <div class="page-heading">
-                    <span class="eyebrow">EXAM PREPARATION</span>
-                    <h2>Exam Countdown</h2>
-                    <p>Keep track of your upcoming examinations.</p>
+
+                    <span class="eyebrow">
+                        EXAM PREPARATION
+                    </span>
+
+                    <h2>
+                        Exam Countdown
+                    </h2>
+
+                    <p>
+                        Keep track of your upcoming examinations.
+                    </p>
+
                 </div>
+
 
                 <div class="empty-page">
 
-                    <div class="large-icon">⏰</div>
+                    <div class="large-icon">
+                        ⏰
+                    </div>
 
-                    <h3>No exams added</h3>
+                    <h3>
+                        No exams added
+                    </h3>
 
                     <p>
-                        Add an exam and StudentHub will help you keep track of the date.
+                        Add an exam and StudentHub will help you
+                        keep track of the date.
                     </p>
 
                     <button class="primary-button">
@@ -469,20 +884,37 @@
             </section>
 
 
-            <!-- Notes -->
+            <!-- =========================================
+                 NOTES
+            ========================================== -->
             <section class="page" id="notes">
 
                 <div class="page-heading">
-                    <span class="eyebrow">LEARNING</span>
-                    <h2>My Notes</h2>
-                    <p>Keep your important study notes in one place.</p>
+
+                    <span class="eyebrow">
+                        LEARNING
+                    </span>
+
+                    <h2>
+                        My Notes
+                    </h2>
+
+                    <p>
+                        Keep your important study notes in one place.
+                    </p>
+
                 </div>
+
 
                 <div class="empty-page">
 
-                    <div class="large-icon">📖</div>
+                    <div class="large-icon">
+                        📖
+                    </div>
 
-                    <h3>No notes yet</h3>
+                    <h3>
+                        No notes yet
+                    </h3>
 
                     <p>
                         Create your first study note.
@@ -497,14 +929,27 @@
             </section>
 
 
-            <!-- Profile -->
+            <!-- =========================================
+                 PROFILE
+            ========================================== -->
             <section class="page" id="profile">
 
                 <div class="page-heading">
-                    <span class="eyebrow">ACCOUNT</span>
-                    <h2>My Profile</h2>
-                    <p>Manage your student information.</p>
+
+                    <span class="eyebrow">
+                        ACCOUNT
+                    </span>
+
+                    <h2>
+                        My Profile
+                    </h2>
+
+                    <p>
+                        Manage your student information.
+                    </p>
+
                 </div>
+
 
                 <div class="profile-card">
 
@@ -513,13 +958,19 @@
                     </div>
 
                     <div>
-                        <h3>Hacker Pro</h3>
-                        <p>StudentHub GH Student</p>
+                        <h3>
+                            Hacker Pro
+                        </h3>
+
+                        <p>
+                            StudentHub GH Student
+                        </p>
                     </div>
 
                 </div>
 
             </section>
+
 
         </main>
 
