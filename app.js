@@ -1961,6 +1961,71 @@ function updateQuizPerformance() {
     }
 
 }
+        /* =========================================
+       RECENT QUIZ ATTEMPTS
+    ========================================== */
+
+    const recentContainer =
+        document.getElementById(
+            "recentQuizAttempts"
+        );
+
+    if (recentContainer) {
+
+        const history =
+            JSON.parse(
+                localStorage.getItem(
+                    QUIZ_HISTORY_KEY
+                )
+            ) || [];
+
+        if (history.length === 0) {
+
+            recentContainer.innerHTML = `
+                <p class="quiz-history-empty">
+                    No quiz attempts yet.
+                </p>
+            `;
+
+        } else {
+
+            const recent =
+                history
+                    .slice()
+                    .reverse()
+                    .slice(0, 5);
+
+            recentContainer.innerHTML =
+                recent.map((attempt) => `
+
+                    <div class="recent-quiz-item">
+
+                        <div class="recent-quiz-info">
+
+                            <strong>
+                                ${attempt.subject || "All Subjects"}
+                            </strong>
+
+                            <small>
+                                ${attempt.score}/${attempt.total}
+                                questions correct
+                            </small>
+
+                        </div>
+
+                        <div class="recent-quiz-score">
+
+                            ${attempt.percentage}%
+
+                        </div>
+
+                    </div>
+
+                `).join("");
+
+        }
+
+    }
 // =========================================
 // INITIAL RENDER
 // =========================================
