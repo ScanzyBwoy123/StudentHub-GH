@@ -22,6 +22,35 @@
 
 <body>
 
+    <script>
+        (async function () {
+
+            try {
+
+                const user =
+                    await getStudentHubUser();
+
+                if (!user) {
+                    window.location.href =
+                        "login.html";
+                    return;
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "Authentication check failed:",
+                    error
+                );
+
+                window.location.href =
+                    "login.html";
+
+            }
+
+        })();
+    </script>
+
     <div class="app">
 
 
