@@ -337,6 +337,98 @@ if (pageName === "quiz") {
 }
         });
     });
+        // =========================================
+    // MOBILE NAVIGATION
+    // =========================================
+
+    const mobileMenuButton =
+        document.getElementById("mobileMenuButton");
+
+    const sidebar =
+        document.querySelector(".sidebar");
+
+    if (mobileMenuButton && sidebar) {
+
+        let mobileMenuOpen = false;
+
+        mobileMenuButton.addEventListener(
+            "click",
+            () => {
+
+                mobileMenuOpen =
+                    !mobileMenuOpen;
+
+                if (mobileMenuOpen) {
+
+                    sidebar.style.width = "260px";
+                    sidebar.style.padding = "20px";
+                    sidebar.style.overflow = "auto";
+                    sidebar.style.borderRight =
+                        "1px solid var(--border)";
+                    sidebar.style.position = "fixed";
+                    sidebar.style.left = "0";
+                    sidebar.style.top = "0";
+                    sidebar.style.bottom = "0";
+                    sidebar.style.zIndex = "100";
+
+                    mobileMenuButton.textContent = "✕";
+                    mobileMenuButton.setAttribute(
+                        "aria-expanded",
+                        "true"
+                    );
+
+                } else {
+
+                    sidebar.style.width = "0";
+                    sidebar.style.padding = "0";
+                    sidebar.style.overflow = "hidden";
+                    sidebar.style.borderRight = "none";
+
+                    mobileMenuButton.textContent = "☰";
+                    mobileMenuButton.setAttribute(
+                        "aria-expanded",
+                        "false"
+                    );
+
+                }
+
+            }
+        );
+
+
+        navItems.forEach(item => {
+
+            item.addEventListener(
+                "click",
+                () => {
+
+                    if (
+                        window.innerWidth <= 800 &&
+                        mobileMenuOpen
+                    ) {
+
+                        mobileMenuOpen = false;
+
+                        sidebar.style.width = "0";
+                        sidebar.style.padding = "0";
+                        sidebar.style.overflow = "hidden";
+                        sidebar.style.borderRight = "none";
+
+                        mobileMenuButton.textContent = "☰";
+
+                        mobileMenuButton.setAttribute(
+                            "aria-expanded",
+                            "false"
+                        );
+
+                    }
+
+                }
+            );
+
+        });
+
+    }
 
     // =========================================
     // DATE
