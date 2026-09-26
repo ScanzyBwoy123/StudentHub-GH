@@ -1,4 +1,5 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from "jsr:@supabase/supabase-js@2";
 
 const SUPABASE_URL =
   Deno.env.get("SUPABASE_URL")!;
@@ -6,76 +7,257 @@ const SUPABASE_URL =
 const SUPABASE_SERVICE_ROLE_KEY =
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
+const supabaseAdmin =
+  createClient(
+    SUPABASE_URL,
+    SUPABASE_SERVICE_ROLE_KEY
+  );
+
+
 Deno.serve(async (req) => {
+
   try {
+
+    /* =====================================================
+       METHOD CHECK
+    ===================================================== */
+
     if (req.method !== "POST") {
+
       return new Response(
         JSON.stringify({
-          error: "Only POST requests are allowed."
+          error:
+            "Only POST requests are allowed."
         }),
         {
           status: 405,
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type":
+              "application/json"
           }
         }
       );
+
     }
 
-    if (
-      !SUPABASE_URL ||
-      !SUPABASE_SERVICE_ROLE_KEY
-    ) {
+
+    /* =====================================================
+       AUTHORIZATION HEADER
+    ===================================================== */
+
+    const authorization =
+      req.headers.get(
+        "Authorization"
+      );
+
+
+    if (!authorization) {
+
       return new Response(
         JSON.stringify({
           error:
-            "Supabase server configuration is missing."
+            "Authentication is required."
+        }),
+        {
+          status: 401,
+          headers: {
+            "Content-Type":
+              "application/json"
+          }
+        }
+      );
+
+    }
+
+
+    const token =
+      authorization.replace(
+        "Bearer ",
+        ""
+      ).trim();
+
+
+    if (!token) {
+
+      return new Response(
+        JSON.stringify({
+          error:
+            "Invalid authentication token."
+        }),
+        {
+          status: 401,
+          headers: {
+            "Content-Type":
+              "application/json"
+          }
+        }
+      );
+
+    }
+
+
+    /* =====================================================
+       VERIFY LOGGED-IN USER
+    ===================================================== */
+
+    const {
+      data: userData,
+      error: userError
+    } =
+      await supabaseAdmin.auth
+        .getUser(token);
+
+
+    if (
+      userError ||
+      !userData?.user
+    ) {
+
+      return new Response(
+        JSON.stringify({
+          error:
+            "Invalid or expired authentication."
+        }),
+        {
+          status: 401,
+          headers: {
+            "Content-Type":
+              "application/json"
+          }
+        }
+      );
+
+    }
+
+
+    const user =
+      userData.user;
+
+
+    /* =====================================================
+       VERIFY ADMIN ROLE
+    ===================================================== */
+
+    const {
+      data: profile,
+      error: profileError
+    } =
+      await supabaseAdmin
+        .from("student_profiles")
+        .select("role")
+        .eq("id", user.id)
+        .maybeSingle();
+
+
+    if (profileError) {
+
+      console.error(
+        "Profile lookup error:",
+        profileError
+      );
+
+      return new Response(
+        JSON.stringify({
+          error:
+            "Unable to verify administrator permissions."
         }),
         {
           status: 500,
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type":
+              "application/json"
           }
         }
       );
+
     }
 
-    const body = await req.json();
+
+    if (
+      !profile ||
+      profile.role !== "admin"
+    ) {
+
+      return new Response(
+        JSON.stringify({
+          error:
+            "Administrator permission required."
+        }),
+        {
+          status: 403,
+          headers: {
+            "Content-Type":
+              "application/json"
+          }
+        }
+      );
+
+    }
+
+
+    /* =====================================================
+       READ REQUEST BODY
+    ===================================================== */
+
+    const body =
+      await req.json();
+
 
     const subject =
-      String(body.subject || "").trim();
+      String(
+        body.subject || ""
+      ).trim();
+
 
     const topic =
-      String(body.topic || "General").trim();
+      String(
+        body.topic || "General"
+      ).trim();
+
 
     const difficulty =
       String(
         body.difficulty || "medium"
       ).trim();
 
+
     const questions =
-      Array.isArray(body.questions)
+      Array.isArray(
+        body.questions
+      )
         ? body.questions
         : [];
+
 
     const publish =
       body.publish === true;
 
+
+    /* =====================================================
+       VALIDATE REQUEST
+    ===================================================== */
+
     if (!subject) {
+
       return new Response(
         JSON.stringify({
-          error: "Subject is required."
+          error:
+            "Subject is required."
         }),
         {
           status: 400,
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type":
+              "application/json"
           }
         }
       );
+
     }
 
+
     if (questions.length === 0) {
+
       return new Response(
         JSON.stringify({
           error:
@@ -84,13 +266,17 @@ Deno.serve(async (req) => {
         {
           status: 400,
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type":
+              "application/json"
           }
         }
       );
+
     }
 
+
     if (questions.length > 50) {
+
       return new Response(
         JSON.stringify({
           error:
@@ -99,63 +285,96 @@ Deno.serve(async (req) => {
         {
           status: 400,
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type":
+              "application/json"
           }
         }
       );
+
     }
 
+
+    /* =====================================================
+       CLEAN QUESTIONS
+    ===================================================== */
+
     const cleanedQuestions =
-      questions.map((item) => {
+      questions.map(
+        (item) => {
 
-        const options =
-          Array.isArray(item.options)
-            ? item.options
-                .map((option) =>
-                  String(option || "").trim()
-                )
-                .filter(Boolean)
-            : [];
-
-        return {
-          subject,
-          topic:
-            String(
-              item.topic || topic
-            ).trim(),
-
-          difficulty,
-
-          question:
-            String(
-              item.question || ""
-            ).trim(),
-
-          options,
-
-          answer:
-            String(
-              item.answer || ""
-            ).trim(),
-
-          explanation:
-            String(
-              item.explanation || ""
-            ).trim(),
-
-          is_premium:
-            item.is_premium === true,
-
-          published:
-            publish
-        };
-
-      });
+          const options =
+            Array.isArray(
+              item.options
+            )
+              ? item.options
+                  .map(
+                    (option) =>
+                      String(
+                        option || ""
+                      ).trim()
+                  )
+                  .filter(Boolean)
+              : [];
 
 
-    for (const item of cleanedQuestions) {
+          return {
+
+            subject,
+
+            topic:
+              String(
+                item.topic ||
+                topic
+              ).trim(),
+
+            difficulty,
+
+            question:
+              String(
+                item.question ||
+                ""
+              ).trim(),
+
+            options,
+
+            answer:
+              String(
+                item.answer ||
+                ""
+              ).trim(),
+
+            explanation:
+              String(
+                item.explanation ||
+                ""
+              ).trim(),
+
+            is_premium:
+              item.is_premium === true,
+
+            published:
+              publish,
+
+            created_by:
+              user.id
+
+          };
+
+        }
+      );
+
+
+    /* =====================================================
+       VALIDATE EACH QUESTION
+    ===================================================== */
+
+    for (
+      const item
+      of cleanedQuestions
+    ) {
 
       if (!item.question) {
+
         return new Response(
           JSON.stringify({
             error:
@@ -164,13 +383,19 @@ Deno.serve(async (req) => {
           {
             status: 400,
             headers: {
-              "Content-Type": "application/json"
+              "Content-Type":
+                "application/json"
             }
           }
         );
+
       }
 
-      if (item.options.length !== 4) {
+
+      if (
+        item.options.length !== 4
+      ) {
+
         return new Response(
           JSON.stringify({
             error:
@@ -179,17 +404,21 @@ Deno.serve(async (req) => {
           {
             status: 400,
             headers: {
-              "Content-Type": "application/json"
+              "Content-Type":
+                "application/json"
             }
           }
         );
+
       }
+
 
       if (
         !item.options.includes(
           item.answer
         )
       ) {
+
         return new Response(
           JSON.stringify({
             error:
@@ -198,13 +427,17 @@ Deno.serve(async (req) => {
           {
             status: 400,
             headers: {
-              "Content-Type": "application/json"
+              "Content-Type":
+                "application/json"
             }
           }
         );
+
       }
 
+
       if (!item.explanation) {
+
         return new Response(
           JSON.stringify({
             error:
@@ -213,79 +446,38 @@ Deno.serve(async (req) => {
           {
             status: 400,
             headers: {
-              "Content-Type": "application/json"
+              "Content-Type":
+                "application/json"
             }
           }
         );
+
       }
+
     }
 
 
-    const response =
-      await fetch(
-        `${SUPABASE_URL}/rest/v1/question_bank`,
-        {
-          method: "POST",
+    /* =====================================================
+       SAVE TO QUESTION BANK
+    ===================================================== */
 
-          headers: {
-            "Content-Type":
-              "application/json",
-
-            apikey:
-              SUPABASE_SERVICE_ROLE_KEY,
-
-            Authorization:
-              `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-
-            Prefer:
-              "return=representation"
-          },
-
-          body:
-            JSON.stringify(
-              cleanedQuestions.map(
-                (item) => ({
-                  subject:
-                    item.subject,
-
-                  topic:
-                    item.topic,
-
-                  difficulty:
-                    item.difficulty,
-
-                  question:
-                    item.question,
-
-                  options:
-                    item.options,
-
-                  answer:
-                    item.answer,
-
-                  explanation:
-                    item.explanation,
-
-                  is_premium:
-                    item.is_premium,
-
-                  published:
-                    item.published
-                })
-              )
-          )
-        }
-      );
+    const {
+      data: savedQuestions,
+      error: saveError
+    } =
+      await supabaseAdmin
+        .from("question_bank")
+        .insert(
+          cleanedQuestions
+        )
+        .select();
 
 
-    if (!response.ok) {
-
-      const errorText =
-        await response.text();
+    if (saveError) {
 
       console.error(
-        "Supabase database error:",
-        errorText
+        "Question bank error:",
+        saveError
       );
 
       return new Response(
@@ -301,24 +493,29 @@ Deno.serve(async (req) => {
           }
         }
       );
+
     }
 
 
-    const savedQuestions =
-      await response.json();
-
+    /* =====================================================
+       SUCCESS
+    ===================================================== */
 
     return new Response(
       JSON.stringify({
+
         success: true,
 
-        published: publish,
+        published:
+          publish,
 
         savedCount:
-          savedQuestions.length,
+          savedQuestions?.length ||
+          0,
 
         questions:
-          savedQuestions
+          savedQuestions || []
+
       }),
       {
         status: 200,
@@ -327,6 +524,7 @@ Deno.serve(async (req) => {
           "Content-Type":
             "application/json"
         }
+
       }
     );
 
@@ -337,6 +535,7 @@ Deno.serve(async (req) => {
       "Save questions error:",
       error
     );
+
 
     return new Response(
       JSON.stringify({
@@ -354,4 +553,5 @@ Deno.serve(async (req) => {
     );
 
   }
+
 });
