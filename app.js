@@ -3080,7 +3080,6 @@ function renderAdminGeneratedQuestions(
     setupAdminReviewActions();
 
 }
-
 /* =========================================================
    ADMIN REVIEW ACTIONS
 ========================================================= */
@@ -3157,26 +3156,68 @@ function setupAdminReviewActions() {
 
         try {
 
-            if (
-                typeof supabase === "undefined" ||
-                !supabase.functions
-            ) {
+            /* =====================================
+               GET CURRENT LOGIN SESSION
+            ====================================== */
+
+            const {
+                data: sessionData,
+                error: sessionError
+            } =
+                await studentHubSupabase.auth.getSession();
+
+
+            if (sessionError) {
+
+                console.error(
+                    "Session error:",
+                    sessionError
+                );
 
                 throw new Error(
-                    "Supabase is not connected."
+                    "Unable to get your login session."
                 );
 
             }
 
 
-            const {
-                data,
-                error
-            } =
-                await supabase.functions.invoke(
-                    "save-questions",
+            const accessToken =
+                sessionData?.session?.access_token;
+
+
+            if (!accessToken) {
+
+                throw new Error(
+                    "Your login session has expired. Please log in again."
+                );
+
+            }
+
+
+            /* =====================================
+               CALL SAVE-QUESTIONS EDGE FUNCTION
+            ====================================== */
+
+            const response =
+                await fetch(
+                    "https://gwosailuqdsvttebrhen.supabase.co/functions/v1/save-questions",
                     {
-                        body: {
+                        method: "POST",
+
+                        headers: {
+
+                            "Content-Type":
+                                "application/json",
+
+                            "Authorization":
+                                `Bearer ${accessToken}`,
+
+                            "apikey":
+                                SUPABASE_PUBLISHABLE_KEY
+
+                        },
+
+                        body: JSON.stringify({
 
                             subject:
                                 subject,
@@ -3193,21 +3234,51 @@ function setupAdminReviewActions() {
                             publish:
                                 publish
 
-                        }
+                        })
+
                     }
                 );
 
 
-            if (error) {
+            /* =====================================
+               READ SERVER RESPONSE
+            ====================================== */
+
+            let data;
+
+            try {
+
+                data =
+                    await response.json();
+
+            } catch (jsonError) {
 
                 console.error(
-                    "Save questions error:",
-                    error
+                    "Invalid save response:",
+                    jsonError
                 );
 
                 throw new Error(
-                    error.message ||
-                    "Unable to save questions."
+                    "The server returned an invalid response."
+                );
+
+            }
+
+
+            /* =====================================
+               HANDLE SERVER ERROR
+            ====================================== */
+
+            if (!response.ok) {
+
+                console.error(
+                    "Save questions failed:",
+                    data
+                );
+
+                throw new Error(
+                    data?.error ||
+                    `Unable to save questions (${response.status}).`
                 );
 
             }
@@ -3226,10 +3297,18 @@ function setupAdminReviewActions() {
             }
 
 
+            /* =====================================
+               UPDATE GENERATED QUESTIONS
+            ====================================== */
+
             window.studentHubGeneratedQuestions =
                 data.questions ||
                 questions;
 
+
+            /* =====================================
+               SUCCESS MESSAGE
+            ====================================== */
 
             alert(
                 publish
@@ -3247,7 +3326,7 @@ function setupAdminReviewActions() {
 
 
             alert(
-                error.message ||
+                error?.message ||
                 "Something went wrong while saving the questions."
             );
 
@@ -3270,6 +3349,10 @@ function setupAdminReviewActions() {
     }
 
 
+    /* =====================================
+       SAVE AS DRAFT
+    ====================================== */
+
     if (draftButton) {
 
         draftButton.addEventListener(
@@ -3283,6 +3366,10 @@ function setupAdminReviewActions() {
 
     }
 
+
+    /* =====================================
+       PUBLISH QUESTIONS
+    ====================================== */
 
     if (publishButton) {
 
