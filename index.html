@@ -22,35 +22,6 @@
 
 <body>
 
-    <script>
-        (async function () {
-
-            try {
-
-                const user =
-                    await getStudentHubUser();
-
-                if (!user) {
-                    window.location.href =
-                        "login.html";
-                    return;
-                }
-
-            } catch (error) {
-
-                console.error(
-                    "Authentication check failed:",
-                    error
-                );
-
-                window.location.href =
-                    "login.html";
-
-            }
-
-        })();
-    </script>
-
     <div class="app">
 
 
@@ -164,13 +135,15 @@
                     <span>📖</span>
                     My Notes
                 </button>
+
+
                 <button
-    class="nav-item"
-    data-page="admin"
->
-    <span>⚙️</span>
-    Admin
-</button>
+                    class="nav-item"
+                    data-page="admin"
+                >
+                    <span>⚙️</span>
+                    Admin
+                </button>
 
             </nav>
 
@@ -643,36 +616,40 @@
                     >
                         🧠 Practice Questions
                     </button>
+
+
                     <div class="recent-quiz-section">
 
-    <div class="recent-quiz-header">
+                        <div class="recent-quiz-header">
 
-        <div>
-            <span class="card-label">
-                RECENT ACTIVITY
-            </span>
+                            <div>
 
-            <h4>
-                Recent Quiz Attempts
-            </h4>
-        </div>
+                                <span class="card-label">
+                                    RECENT ACTIVITY
+                                </span>
 
-        <span class="recent-quiz-icon">
-            📊
-        </span>
+                                <h4>
+                                    Recent Quiz Attempts
+                                </h4>
 
-    </div>
+                            </div>
+
+                            <span class="recent-quiz-icon">
+                                📊
+                            </span>
+
+                        </div>
 
 
-    <div id="recentQuizAttempts">
+                        <div id="recentQuizAttempts">
 
-        <p class="quiz-history-empty">
-            No quiz attempts yet.
-        </p>
+                            <p class="quiz-history-empty">
+                                No quiz attempts yet.
+                            </p>
 
-    </div>
+                        </div>
 
-</div>
+                    </div>
 
                 </div>
 
@@ -1346,211 +1323,229 @@
                  QUESTION BANK & QUIZ
             ========================================== -->
 
-    <!-- =========================================
-     QUESTION BANK & QUIZ
-========================================= -->
-
-<section
-    class="page"
-    id="quiz"
->
-
-    <div class="quiz-hero">
-
-        <div class="quiz-hero-content">
-
-            <div class="hero-status">
-
-                <span class="pulse-light"></span>
-
-                <span>
-                    SMART EXAM PREPARATION
-                </span>
-
-            </div>
-
-            <h2>
-                Question Bank
-                <span>& Quiz 🧠</span>
-            </h2>
-
-            <p>
-                Practice unlimited-style MCQs, test your knowledge,
-                learn from explanations, and improve your exam performance.
-            </p>
-
-        </div>
-
-        <div class="quiz-hero-icon">
-            🧠
-        </div>
-
-    </div>
-
-
-    <!-- SUBJECT SELECTION -->
-
-    <div class="quiz-selection-card">
-
-        <div class="quiz-selection-header">
-
-            <div>
-
-                <span class="card-label">
-                    CHOOSE YOUR SUBJECT
-                </span>
-
-                <h3>
-                    What do you want to practice?
-                </h3>
-
-            </div>
-
-            <span class="quiz-live-badge">
-                <span class="pulse-light"></span>
-                LIVE
-            </span>
-
-        </div>
-
-
-        <div class="quiz-subject-grid">
-
-            <button
-                class="quiz-subject"
-                data-subject="All Subjects"
+            <section
+                class="page"
+                id="quiz"
             >
-                <span>🎯</span>
-                <strong>All Subjects</strong>
-                <small>Mixed practice</small>
-            </button>
+
+                <div class="quiz-hero">
+
+                    <div class="quiz-hero-content">
+
+                        <div class="hero-status">
+
+                            <span class="pulse-light"></span>
+
+                            <span>
+                                SMART EXAM PREPARATION
+                            </span>
+
+                        </div>
+
+                        <h2>
+                            Question Bank
+                            <span>& Quiz 🧠</span>
+                        </h2>
+
+                        <p>
+                            Practice unlimited-style MCQs, test your knowledge,
+                            learn from explanations, and improve your exam performance.
+                        </p>
+
+                    </div>
+
+                    <div class="quiz-hero-icon">
+                        🧠
+                    </div>
+
+                </div>
 
 
-            <button
-                class="quiz-subject"
-                data-subject="Anatomy"
-            >
-                <span>🫀</span>
-                <strong>Anatomy</strong>
-                <small>Human body</small>
-            </button>
+                <!-- SUBJECT SELECTION -->
+
+                <div class="quiz-selection-card">
+
+                    <div class="quiz-selection-header">
+
+                        <div>
+
+                            <span class="card-label">
+                                CHOOSE YOUR SUBJECT
+                            </span>
+
+                            <h3>
+                                What do you want to practice?
+                            </h3>
+
+                        </div>
+
+                        <span class="quiz-live-badge">
+
+                            <span class="pulse-light"></span>
+
+                            LIVE
+
+                        </span>
+
+                    </div>
 
 
-            <button
-                class="quiz-subject"
-                data-subject="Nursing"
-            >
-                <span>👩‍⚕️</span>
-                <strong>Nursing</strong>
-                <small>Nursing practice</small>
-            </button>
+                    <div class="quiz-subject-grid">
+
+                        <button
+                            class="quiz-subject"
+                            data-subject="All Subjects"
+                        >
+                            <span>🎯</span>
+                            <strong>All Subjects</strong>
+                            <small>Mixed practice</small>
+                        </button>
 
 
-            <button
-                class="quiz-subject"
-                data-subject="Microbiology"
-            >
-                <span>🦠</span>
-                <strong>Microbiology</strong>
-                <small>Microorganisms</small>
-            </button>
+                        <button
+                            class="quiz-subject"
+                            data-subject="Anatomy"
+                        >
+                            <span>🫀</span>
+                            <strong>Anatomy</strong>
+                            <small>Human body</small>
+                        </button>
 
 
-            <button
-                class="quiz-subject"
-                data-subject="Pharmacology"
-            >
-                <span>💊</span>
-                <strong>Pharmacology</strong>
-                <small>Medicines</small>
-            </button>
+                        <button
+                            class="quiz-subject"
+                            data-subject="Nursing"
+                        >
+                            <span>👩‍⚕️</span>
+                            <strong>Nursing</strong>
+                            <small>Nursing practice</small>
+                        </button>
 
 
-            <button
-                class="quiz-subject"
-                data-subject="Medical Nursing"
-            >
-                <span>🏥</span>
-                <strong>Medical Nursing</strong>
-                <small>Clinical care</small>
-            </button>
-
-        </div>
-
-    </div>
+                        <button
+                            class="quiz-subject"
+                            data-subject="Microbiology"
+                        >
+                            <span>🦠</span>
+                            <strong>Microbiology</strong>
+                            <small>Microorganisms</small>
+                        </button>
 
 
-    <!-- QUIZ AREA -->
-
-    <div id="quizArea"></div>
-
-
-    <!-- QUESTION BANK INFORMATION -->
-
-    <div class="quiz-features">
-
-        <div class="quiz-feature-card">
-
-            <span>🎯</span>
-
-            <div>
-                <strong>Practice Questions</strong>
-
-                <small>
-                    Test yourself with multiple-choice questions.
-                </small>
-            </div>
-
-        </div>
+                        <button
+                            class="quiz-subject"
+                            data-subject="Pharmacology"
+                        >
+                            <span>💊</span>
+                            <strong>Pharmacology</strong>
+                            <small>Medicines</small>
+                        </button>
 
 
-        <div class="quiz-feature-card">
+                        <button
+                            class="quiz-subject"
+                            data-subject="Medical Nursing"
+                        >
+                            <span>🏥</span>
+                            <strong>Medical Nursing</strong>
+                            <small>Clinical care</small>
+                        </button>
 
-            <span>💡</span>
+                    </div>
 
-            <div>
-                <strong>Learn From Answers</strong>
-
-                <small>
-                    Understand why an answer is correct.
-                </small>
-            </div>
-
-        </div>
-
-
-        <div class="quiz-feature-card">
-
-            <span>📊</span>
-
-            <div>
-                <strong>Track Performance</strong>
-
-                <small>
-                    Monitor your scores and improve over time.
-                </small>
-            </div>
-
-        </div>
+                </div>
 
 
-        <div class="quiz-feature-card premium-feature">
+                <!-- QUIZ AREA -->
 
-            <span>💎</span>
+                <div id="quizArea"></div>
 
-            <div>
-                <strong>Premium Question Bank</strong>
 
-                <small>
-                    More subjects and advanced exam practice coming soon.
-                </small>
-            </div>
+                <!-- QUESTION BANK INFORMATION -->
 
-        </div>
+                <div class="quiz-features">
 
-    </div>
+                    <div class="quiz-feature-card">
 
-</section>
+                        <span>🎯</span>
+
+                        <div>
+
+                            <strong>
+                                Practice Questions
+                            </strong>
+
+                            <small>
+                                Test yourself with multiple-choice questions.
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="quiz-feature-card">
+
+                        <span>💡</span>
+
+                        <div>
+
+                            <strong>
+                                Learn From Answers
+                            </strong>
+
+                            <small>
+                                Understand why an answer is correct.
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="quiz-feature-card">
+
+                        <span>📊</span>
+
+                        <div>
+
+                            <strong>
+                                Track Performance
+                            </strong>
+
+                            <small>
+                                Monitor your scores and improve over time.
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="quiz-feature-card premium-feature">
+
+                        <span>💎</span>
+
+                        <div>
+
+                            <strong>
+                                Premium Question Bank
+                            </strong>
+
+                            <small>
+                                More subjects and advanced exam practice coming soon.
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
             <!-- =========================================
                  EXAMS
             ========================================== -->
@@ -1700,7 +1695,7 @@
                 </div>
 
             </section>
-            </section>
+
 
 
             <!-- =========================================
@@ -1968,10 +1963,57 @@
     </div>
 
 
+    <!-- =========================================
+         SUPABASE + STUDENTHUB SCRIPTS
+    ========================================== -->
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase-config.js"></script>
-<script src="auth.js"></script>
-<script src="app.js"></script>
+
+    <script src="supabase-config.js"></script>
+
+    <script src="auth.js"></script>
+
+    <script src="app.js"></script>
+
+
+    <!-- =========================================
+         AUTHENTICATION GUARD
+    ========================================== -->
+
+    <script>
+
+        (async function () {
+
+            try {
+
+                const user =
+                    await getStudentHubUser();
+
+                if (!user) {
+
+                    window.location.href =
+                        "login.html";
+
+                    return;
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "Authentication check failed:",
+                    error
+                );
+
+                window.location.href =
+                    "login.html";
+
+            }
+
+        })();
+
+    </script>
+
+
 </body>
 
 </html>
