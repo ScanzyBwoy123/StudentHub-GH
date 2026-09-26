@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>StudentHub GH — Login</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+            background:
+                linear-gradient(
+                    135deg,
+                    #eef4ff,
+                    #f8faff,
+                    #eefbf7
+                );
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            color: #172033;
+        }
+
+        .auth-wrapper {
+            width: 100%;
+            max-width: 440px;
+        }
+
+        .brand {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .brand-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 12px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            background: linear-gradient(
+                135deg,
+                #2563eb,
+                #7c3aed
+            );
+            color: white;
+            box-shadow:
+                0 12px 30px
+                rgba(37, 99, 235, 0.22);
+        }
+
+        .brand h1 {
+            font-size: 28px;
+            font-weight: 800;
+        }
+
+        .brand p {
+            margin-top: 6px;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .auth-card {
+            background: rgba(255, 255, 255, 0.96);
+            border: 1px solid #e5e7eb;
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow:
+                0 20px 60px
+                rgba(15, 23, 42, 0.10);
+        }
+
+        .tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            background: #f1f5f9;
+            padding: 5px;
+            border-radius: 12px;
+            margin-bottom: 26px;
+        }
+
+        .tab {
+            border: 0;
+            background: transparent;
+            padding: 12px;
+            border-radius: 9px;
+            font-weight: 700;
+            color: #64748b;
+            cursor: pointer;
+        }
+
+        .tab.active {
+            background: white;
+            color: #2563eb;
+            box-shadow:
+                0 2px 8px
+                rgba(15, 23, 42, 0.08);
+        }
+
+        .form-title {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .form-description {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 22px;
+            line-height: 1.5;
+        }
+
+        .field {
+            margin-bottom: 16px;
+        }
+
+        .field label {
+            display: block;
+            margin-bottom: 7px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #334155;
+        }
+
+        .field input {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid #dbe2ea;
+            border-radius: 11px;
+            font-size: 16px;
+            outline: none;
+            transition: 0.2s;
+            background: white;
+        }
+
+        .field input:focus {
+            border-color: #2563eb;
+            box-shadow:
+                0 0 0 3px
+                rgba(37, 99, 235, 0.10);
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-wrapper input {
+            padding-right: 52px;
+        }
+
+        .show-password {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 0;
+            background: transparent;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 8px;
+        }
+
+        .submit-button {
+            width: 100%;
+            border: 0;
+            border-radius: 12px;
+            padding: 14px;
+            background: linear-gradient(
+                135deg,
+                #2563eb,
+                #4f46e5
+            );
+            color: white;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            margin-top: 6px;
+            transition: 0.2s;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-1px);
+        }
+
+        .submit-button:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .message {
+            display: none;
+            margin-bottom: 16px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .message.success {
+            display: block;
+            background: #ecfdf5;
+            color: #047857;
+            border: 1px solid #a7f3d0;
+        }
+
+        .message.error {
+            display: block;
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+        }
+
+        .switch-text {
+            text-align: center;
+            margin-top: 20px;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .switch-text button {
+            border: 0;
+            background: none;
+            color: #2563eb;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 18px;
+            color: #94a3b8;
+            font-size: 12px;
+        }
+
+        @media (max-width: 480px) {
+
+            body {
+                padding: 16px;
+            }
+
+            .auth-card {
+                padding: 22px;
+                border-radius: 20px;
+            }
+
+            .brand h1 {
+                font-size: 25px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <div class="auth-wrapper">
+
+        <div class="brand">
+
+            <div class="brand-icon">
+                🎓
+            </div>
+
+            <h1>
+                StudentHub GH
+            </h1>
+
+            <p>
+                Learn smarter. Prepare better. Succeed together.
+            </p>
+
+        </div>
+
+
+        <div class="auth-card">
+
+            <div class="tabs">
+
+                <button
+                    type="button"
+                    class="tab active"
+                    id="loginTab"
+                >
+                    Login
+                </button>
+
+                <button
+                    type="button"
+                    class="tab"
+                    id="signupTab"
+                >
+                    Create Account
+                </button>
+
+            </div>
+
+
+            <div
+                id="message"
+                class="message"
+            ></div>
+
+
+            <!-- LOGIN -->
+
+            <form id="loginForm">
+
+                <h2 class="form-title">
+                    Welcome back
+                </h2>
+
+                <p class="form-description">
+                    Login to continue to your StudentHub dashboard.
+                </p>
+
+
+                <div class="field">
+
+                    <label for="loginEmail">
+                        Email Address
+                    </label>
+
+                    <input
+                        type="email"
+                        id="loginEmail"
+                        placeholder="you@example.com"
+                        autocomplete="email"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="loginPassword">
+                        Password
+                    </label>
+
+                    <div class="password-wrapper">
+
+                        <input
+                            type="password"
+                            id="loginPassword"
+                            placeholder="Enter your password"
+                            autocomplete="current-password"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            class="show-password"
+                            id="showLoginPassword"
+                            aria-label="Show password"
+                        >
+                            👁️
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="submit-button"
+                    id="loginButton"
+                >
+                    Login to StudentHub
+                </button>
+
+            </form>
+
+
+            <!-- SIGN UP -->
+
+            <form
+                id="signupForm"
+                style="display: none;"
+            >
+
+                <h2 class="form-title">
+                    Create your account
+                </h2>
+
+                <p class="form-description">
+                    Create your StudentHub GH student account.
+                </p>
+
+
+                <div class="field">
+
+                    <label for="signupName">
+                        Full Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="signupName"
+                        placeholder="Your full name"
+                        autocomplete="name"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="signupEmail">
+                        Email Address
+                    </label>
+
+                    <input
+                        type="email"
+                        id="signupEmail"
+                        placeholder="you@example.com"
+                        autocomplete="email"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="signupPassword">
+                        Password
+                    </label>
+
+                    <div class="password-wrapper">
+
+                        <input
+                            type="password"
+                            id="signupPassword"
+                            placeholder="Create a password"
+                            autocomplete="new-password"
+                            minlength="6"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            class="show-password"
+                            id="showSignupPassword"
+                            aria-label="Show password"
+                        >
+                            👁️
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="submit-button"
+                    id="signupButton"
+                >
+                    Create Student Account
+                </button>
+
+            </form>
+
+
+            <div class="switch-text">
+
+                <span id="switchMessage">
+                    Don't have an account?
+                </span>
+
+                <button
+                    type="button"
+                    id="switchButton"
+                >
+                    Create one
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="footer">
+            StudentHub GH • Student Learning Platform
+        </div>
+
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="supabase-config.js"></script>
+
+    <script src="auth.js"></script>
+
+
+    <script>
+
+        const loginForm =
+            document.getElementById("loginForm");
+
+        const signupForm =
+            document.getElementById("signupForm");
+
+        const loginTab =
+            document.getElementById("loginTab");
+
+        const signupTab =
+            document.getElementById("signupTab");
+
+        const switchButton =
+            document.getElementById("switchButton");
+
+        const switchMessage =
+            document.getElementById("switchMessage");
+
+        const message =
+            document.getElementById("message");
+
+
+        function showMessage(
+            text,
+            type
+        ) {
+
+            message.textContent = text;
+
+            message.className =
+                "message " + type;
+
+        }
+
+
+        function clearMessage() {
+
+            message.textContent = "";
+
+            message.className =
+                "message";
+
+        }
+
+
+        function showLogin() {
+
+            loginForm.style.display =
+                "block";
+
+            signupForm.style.display =
+                "none";
+
+            loginTab.classList.add(
+                "active"
+            );
+
+            signupTab.classList.remove(
+                "active"
+            );
+
+            switchMessage.textContent =
+                "Don't have an account?";
+
+            switchButton.textContent =
+                "Create one";
+
+            clearMessage();
+
+        }
+
+
+        function showSignup() {
+
+            loginForm.style.display =
+                "none";
+
+            signupForm.style.display =
+                "block";
+
+            loginTab.classList.remove(
+                "active"
+            );
+
+            signupTab.classList.add(
+                "active"
+            );
+
+            switchMessage.textContent =
+                "Already have an account?";
+
+            switchButton.textContent =
+                "Login";
+
+            clearMessage();
+
+        }
+
+
+        loginTab.addEventListener(
+            "click",
+            showLogin
+        );
+
+
+        signupTab.addEventListener(
+            "click",
+            showSignup
+        );
+
+
+        switchButton.addEventListener(
+            "click",
+            function () {
+
+                if (
+                    signupForm.style.display ===
+                    "none"
+                ) {
+
+                    showSignup();
+
+                } else {
+
+                    showLogin();
+
+                }
+
+            }
+        );
+
+
+        function setupPasswordToggle(
+            inputId,
+            buttonId
+        ) {
+
+            const input =
+                document.getElementById(
+                    inputId
+                );
+
+            const button =
+                document.getElementById(
+                    buttonId
+                );
+
+            button.addEventListener(
+                "click",
+                function () {
+
+                    const isPassword =
+                        input.type ===
+                        "password";
+
+                    input.type =
+                        isPassword
+                            ? "text"
+                            : "password";
+
+                    button.textContent =
+                        isPassword
+                            ? "🙈"
+                            : "👁️";
+
+                }
+            );
+
+        }
+
+
+        setupPasswordToggle(
+            "loginPassword",
+            "showLoginPassword"
+        );
+
+
+        setupPasswordToggle(
+            "signupPassword",
+            "showSignupPassword"
+        );
+
+
+        loginForm.addEventListener(
+            "submit",
+            async function (event) {
+
+                event.preventDefault();
+
+                const email =
+                    document
+                        .getElementById(
+                            "loginEmail"
+                        )
+                        .value
+                        .trim();
+
+                const password =
+                    document
+                        .getElementById(
+                            "loginPassword"
+                        )
+                        .value;
+
+                const button =
+                    document.getElementById(
+                        "loginButton"
+                    );
+
+                clearMessage();
+
+                button.disabled =
+                    true;
+
+                button.textContent =
+                    "Logging in...";
+
+                try {
+
+                    await studentHubSignIn(
+                        email,
+                        password
+                    );
+
+                    showMessage(
+                        "Login successful. Opening StudentHub...",
+                        "success"
+                    );
+
+                    setTimeout(
+                        function () {
+
+                            window.location.href =
+                                "index.html";
+
+                        },
+                        700
+                    );
+
+                } catch (error) {
+
+                    showMessage(
+                        error.message ||
+                        "Unable to login. Please check your email and password.",
+                        "error"
+                    );
+
+                } finally {
+
+                    button.disabled =
+                        false;
+
+                    button.textContent =
+                        "Login to StudentHub";
+
+                }
+
+            }
+        );
+
+
+        signupForm.addEventListener(
+            "submit",
+            async function (event) {
+
+                event.preventDefault();
+
+                const fullName =
+                    document
+                        .getElementById(
+                            "signupName"
+                        )
+                        .value
+                        .trim();
+
+                const email =
+                    document
+                        .getElementById(
+                            "signupEmail"
+                        )
+                        .value
+                        .trim();
+
+                const password =
+                    document
+                        .getElementById(
+                            "signupPassword"
+                        )
+                        .value;
+
+                const button =
+                    document.getElementById(
+                        "signupButton"
+                    );
+
+                clearMessage();
+
+                if (password.length < 6) {
+
+                    showMessage(
+                        "Password must contain at least 6 characters.",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+                button.disabled =
+                    true;
+
+                button.textContent =
+                    "Creating account...";
+
+                try {
+
+                    const data =
+                        await studentHubSignUp(
+                            email,
+                            password,
+                            fullName
+                        );
+
+                    if (
+                        data &&
+                        data.session
+                    ) {
+
+                        showMessage(
+                            "Account created successfully. Opening StudentHub...",
+                            "success"
+                        );
+
+                        setTimeout(
+                            function () {
+
+                                window.location.href =
+                                    "index.html";
+
+                            },
+                            700
+                        );
+
+                    } else {
+
+                        showMessage(
+                            "Account created. Please check your email if verification is required before logging in.",
+                            "success"
+                        );
+
+                    }
+
+                } catch (error) {
+
+                    showMessage(
+                        error.message ||
+                        "Unable to create your account.",
+                        "error"
+                    );
+
+                } finally {
+
+                    button.disabled =
+                        false;
+
+                    button.textContent =
+                        "Create Student Account";
+
+                }
+
+            }
+        );
+
+
+        studentHubSupabase.auth.getSession()
+            .then(
+                function (result) {
+
+                    const session =
+                        result?.data?.session;
+
+                    if (session) {
+
+                        window.location.href =
+                            "index.html";
+
+                    }
+
+                }
+            );
+
+    </script>
+
+</body>
+
+</html>
