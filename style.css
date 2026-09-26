@@ -1,28 +1,51 @@
-/* =========================================
-   StudentHub GH
-   Main Styles
-========================================= */
-
 :root {
+    /* =====================================================
+       STUDENTHUB GH — DESIGN SYSTEM
+    ===================================================== */
+
     --primary: #2563eb;
     --primary-dark: #1d4ed8;
     --primary-light: #eff6ff;
 
-    --background: #f6f8fc;
-    --surface: #ffffff;
-    --border: #e5e7eb;
+    --accent: #7c3aed;
+    --accent-light: #f5f3ff;
 
-    --text: #111827;
-    --muted: #6b7280;
-    --soft: #9ca3af;
+    --background: #f5f7fb;
+    --surface: #ffffff;
+    --surface-soft: #f8fafc;
+
+    --border: #e2e8f0;
+    --border-light: #edf2f7;
+
+    --text: #0f172a;
+    --text-secondary: #334155;
+    --muted: #64748b;
+    --soft: #94a3b8;
 
     --success: #16a34a;
+    --success-light: #ecfdf5;
+
     --warning: #f59e0b;
+    --warning-light: #fffbeb;
+
+    --danger: #dc2626;
+    --danger-light: #fef2f2;
 
     --sidebar-width: 250px;
 
-    --radius: 16px;
-    --shadow: 0 8px 30px rgba(15, 23, 42, 0.06);
+    --radius-sm: 10px;
+    --radius-md: 14px;
+    --radius-lg: 18px;
+    --radius-xl: 24px;
+
+    --shadow-sm:
+        0 2px 8px rgba(15, 23, 42, 0.04);
+
+    --shadow:
+        0 8px 28px rgba(15, 23, 42, 0.06);
+
+    --shadow-lg:
+        0 18px 45px rgba(15, 23, 42, 0.08);
 }
 
 /* =========================================
@@ -53,19 +76,12 @@ body {
     color: var(--text);
 
     min-height: 100vh;
-}
 
-button,
-input,
-textarea,
-select {
-    font: inherit;
-}
+    line-height: 1.5;
 
-button {
-    cursor: pointer;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
 }
-
 /* =========================================
    Main App
 ========================================= */
@@ -4549,4 +4565,92 @@ body {
         padding: 36px 20px;
     }
 
+}
+/* =========================================================
+   STUDENTHUB GH — CLEAN GLOBAL VISUAL SYSTEM
+========================================================= */
+
+body {
+    background:
+        radial-gradient(
+            circle at 0% 0%,
+            rgba(37, 99, 235, 0.045),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 100% 100%,
+            rgba(124, 58, 237, 0.035),
+            transparent 30%
+        ),
+        var(--background);
+}
+
+.main-content {
+    background: transparent;
+}
+
+/* Consistent content spacing */
+
+.page {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Consistent headings */
+
+.page-heading h2 {
+    color: var(--text);
+    letter-spacing: -0.025em;
+}
+
+.page-heading p {
+    color: var(--muted);
+}
+
+/* Consistent cards */
+
+.dashboard-card,
+.course-card,
+.assignment-card,
+.quiz-card,
+.profile-card,
+.empty-page,
+.timetable-day,
+.gpa-table-wrapper {
+    border-color: var(--border);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Better focus visibility */
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+    outline: 3px solid rgba(37, 99, 235, 0.20);
+    outline-offset: 2px;
+}
+
+/* Smooth but restrained interaction */
+
+button,
+a,
+.course-card,
+.assignment-card,
+.dashboard-card,
+.action-card,
+.quiz-option {
+    transition:
+        background-color 0.18s ease,
+        border-color 0.18s ease,
+        box-shadow 0.18s ease,
+        transform 0.18s ease;
+}
+
+/* Cleaner selection */
+
+::selection {
+    background: rgba(37, 99, 235, 0.16);
+    color: var(--text);
 }
