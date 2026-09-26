@@ -2479,7 +2479,7 @@ function updateQuizPerformance() {
    STUDENTHUB GH — ADMIN QUESTION GENERATOR
 ========================================================= */
 
-function setupAdminQuestionGenerator() {
+async function setupAdminQuestionGenerator() {
 
     const generateButton =
         document.getElementById(
@@ -2490,9 +2490,10 @@ function setupAdminQuestionGenerator() {
         return;
     }
 
+
     generateButton.addEventListener(
         "click",
-        function () {
+        async function () {
 
             const subject =
                 document.getElementById(
@@ -2510,9 +2511,11 @@ function setupAdminQuestionGenerator() {
                 )?.value;
 
             const count =
-                document.getElementById(
-                    "adminQuestionCount"
-                )?.value;
+                Number(
+                    document.getElementById(
+                        "adminQuestionCount"
+                    )?.value
+                ) || 10;
 
             const output =
                 document.getElementById(
@@ -2545,36 +2548,584 @@ function setupAdminQuestionGenerator() {
             }
 
 
+            /* =========================================
+               LOADING STATE
+            ========================================== */
+
+            generateButton.disabled = true;
+
+            generateButton.textContent =
+                "🤖 Generating Questions...";
+
+
             output.innerHTML = `
 
                 <div class="admin-empty-state">
 
                     <div>
-                        🤖
+                        ⏳
                     </div>
 
                     <h3>
-                        Question request prepared
+                        Gemini is generating your questions
                     </h3>
 
                     <p>
-                        ${subject} —
-                        ${topic} —
-                        ${difficulty} —
-                        ${count} questions
-                    </p>
-
-                    <p>
-                        AI generation will be connected
-                        in the next step.
+                        Please wait while StudentHub
+                        creates ${count} questions for
+                        ${subject}.
                     </p>
 
                 </div>
 
             `;
 
+
+            try {
+
+                /* =====================================
+                   CALL SUPABASE EDGE FUNCTION
+                ====================================== */
+
+                if (
+                    typeof supabase === "undefined" ||
+                    !supabase.functions
+                ) {
+
+                    throw new Error(
+                        "Supabase is not connected."
+                    );
+
+                }
+
+
+                const { data, error } =
+                    await supabase.functions.invoke(
+                        "generate-questions",
+                        {
+                            body: {
+                                subject: subject,
+                                topic: topic,
+                                difficulty: difficulty,
+                                count: count
+                            }
+                        }
+                    );
+
+
+                if (error) {
+
+                    console.error(
+                        "Question generation error:",
+                        error
+                    );
+
+                    throw new Error(
+                        error.message ||
+                        "Unable to contact the question generator."
+                    );
+
+                }
+
+
+                if (
+                    !data ||
+                    !Array.isArray(data.questions)
+                ) {
+
+                    throw new Error(
+                        "Gemini returned an invalid question response."
+                    );
+
+                }
+
+
+                if (data.questions.length === 0) {
+
+                    throw new Error(
+                        "No questions were generated."
+                    );
+
+                }
+
+
+                /* =====================================
+                   STORE TEMPORARILY FOR REVIEW
+                ====================================== */
+
+                window.studentHubGeneratedQuestions =
+                    data.questions;
+
+
+                window.studentHubGeneratedQuestionMeta = {
+
+                    subject: subject,
+
+                    topic: topic,
+
+                    difficulty: difficulty
+
+                };
+
+
+                /* =====================================
+                   RENDER QUESTIONS
+                ====================================== */
+
+                renderAdminGeneratedQuestions(
+                    data.questions
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "StudentHub AI error:",
+                    error
+                );
+
+
+                output.innerHTML = `
+
+                    <div class="admin-empty-state">
+
+                        <div>
+                            ⚠️
+                        </div>
+
+                        <h3>
+                            Question generation failed
+                        </h3>
+
+                        <p>
+                            ${
+                                error.message ||
+                                "Something went wrong while generating questions."
+                            }
+                        </p>
+
+                    </div>
+
+                `;
+
+            } finally {
+
+                generateButton.disabled = false;
+
+                generateButton.textContent =
+                    "🤖 Generate Questions";
+
+            }
+
         }
     );
+
+}
+
+
+/* =========================================================
+   RENDER GENERATED QUESTIONS
+========================================================= */
+
+function renderAdminGeneratedQuestions(
+    questions
+) {
+
+    const output =
+        document.getElementById(
+            "adminGeneratedQuestions"
+        );
+
+
+    if (!output) {
+        return;
+    }
+
+
+    output.innerHTML = `
+
+        <div class="admin-review-header">
+
+            <div>
+
+                <span class="section-label">
+                    AI GENERATED
+                </span>
+
+                <h3>
+                    Review Questions
+                </h3>
+
+                <p>
+                    Review the questions before
+                    publishing them to students.
+                </p>
+
+            </div>
+
+            <div class="admin-question-count">
+
+                ${questions.length}
+                Questions
+
+            </div>
+
+        </div>
+
+
+        <div class="admin-question-list">
+
+            ${questions.map(
+                function (item, index) {
+
+                    return `
+
+                        <div
+                            class="admin-question-card"
+                            data-question-index="${index}"
+                        >
+
+                            <div class="admin-question-number">
+
+                                Question ${index + 1}
+
+                            </div>
+
+
+                            <div class="admin-question-field">
+
+                                <label>
+                                    Question
+                                </label>
+
+                                <textarea
+                                    class="admin-question-text"
+                                    rows="3"
+                                >${escapeAdminHtml(
+                                    item.question
+                                )}</textarea>
+
+                            </div>
+
+
+                            <div class="admin-options-grid">
+
+                                ${item.options.map(
+                                    function (
+                                        option,
+                                        optionIndex
+                                    ) {
+
+                                        return `
+
+                                            <div
+                                                class="admin-option-field"
+                                            >
+
+                                                <label>
+                                                    Option ${
+                                                        String.fromCharCode(
+                                                            65 +
+                                                            optionIndex
+                                                        )
+                                                    }
+                                                </label>
+
+                                                <input
+                                                    type="text"
+                                                    class="admin-option-input"
+                                                    data-option-index="${optionIndex}"
+                                                    value="${escapeAdminAttribute(
+                                                        option
+                                                    )}"
+                                                >
+
+                                            </div>
+
+                                        `;
+
+                                    }
+                                ).join("")}
+
+                            </div>
+
+
+                            <div class="admin-question-field">
+
+                                <label>
+                                    Correct Answer
+                                </label>
+
+                                <select
+                                    class="admin-answer-select"
+                                >
+
+                                    ${item.options.map(
+                                        function (
+                                            option,
+                                            optionIndex
+                                        ) {
+
+                                            return `
+
+                                                <option
+                                                    value="${optionIndex}"
+                                                    ${
+                                                        option ===
+                                                        item.answer
+                                                            ? "selected"
+                                                            : ""
+                                                    }
+                                                >
+
+                                                    Option ${
+                                                        String.fromCharCode(
+                                                            65 +
+                                                            optionIndex
+                                                        )
+                                                    }
+
+                                                </option>
+
+                                            `;
+
+                                        }
+                                    ).join("")}
+
+                                </select>
+
+                            </div>
+
+
+                            <div class="admin-question-field">
+
+                                <label>
+                                    Explanation
+                                </label>
+
+                                <textarea
+                                    class="admin-explanation-text"
+                                    rows="3"
+                                >${escapeAdminHtml(
+                                    item.explanation
+                                )}</textarea>
+
+                            </div>
+
+                        </div>
+
+                    `;
+
+                }
+            ).join("")}
+
+        </div>
+
+
+        <div class="admin-review-actions">
+
+            <button
+                type="button"
+                class="primary-btn"
+                id="saveAdminDraftQuestions"
+            >
+                💾 Save as Draft
+            </button>
+
+            <button
+                type="button"
+                class="primary-btn"
+                id="publishAdminQuestions"
+            >
+                🚀 Publish Questions
+            </button>
+
+        </div>
+
+    `;
+
+
+    setupAdminReviewActions();
+
+}
+
+
+/* =========================================================
+   ADMIN REVIEW ACTIONS
+========================================================= */
+
+function setupAdminReviewActions() {
+
+    const draftButton =
+        document.getElementById(
+            "saveAdminDraftQuestions"
+        );
+
+    const publishButton =
+        document.getElementById(
+            "publishAdminQuestions"
+        );
+
+
+    if (draftButton) {
+
+        draftButton.addEventListener(
+            "click",
+            function () {
+
+                const questions =
+                    collectAdminReviewedQuestions();
+
+
+                window.studentHubGeneratedQuestions =
+                    questions;
+
+
+                alert(
+                    `${questions.length} questions are ready to be saved as drafts.`
+                );
+
+            }
+        );
+
+    }
+
+
+    if (publishButton) {
+
+        publishButton.addEventListener(
+            "click",
+            function () {
+
+                const questions =
+                    collectAdminReviewedQuestions();
+
+
+                window.studentHubGeneratedQuestions =
+                    questions;
+
+
+                alert(
+                    `${questions.length} questions are ready to be published.`
+                );
+
+            }
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   COLLECT REVIEWED QUESTIONS
+========================================================= */
+
+function collectAdminReviewedQuestions() {
+
+    const cards =
+        document.querySelectorAll(
+            ".admin-question-card"
+        );
+
+
+    const questions = [];
+
+
+    cards.forEach(
+        function (card) {
+
+            const question =
+                card.querySelector(
+                    ".admin-question-text"
+                )?.value.trim();
+
+
+            const optionInputs =
+                card.querySelectorAll(
+                    ".admin-option-input"
+                );
+
+
+            const options =
+                Array.from(
+                    optionInputs
+                ).map(
+                    function (input) {
+                        return input.value.trim();
+                    }
+                );
+
+
+            const answerSelect =
+                card.querySelector(
+                    ".admin-answer-select"
+                );
+
+
+            const answerIndex =
+                Number(
+                    answerSelect?.value
+                );
+
+
+            const explanation =
+                card.querySelector(
+                    ".admin-explanation-text"
+                )?.value.trim();
+
+
+            questions.push({
+
+                question: question,
+
+                options: options,
+
+                answer:
+                    options[answerIndex] || "",
+
+                explanation:
+                    explanation,
+
+                topic:
+                    window
+                        .studentHubGeneratedQuestionMeta
+                        ?.topic || "General"
+
+            });
+
+        }
+    );
+
+
+    return questions;
+
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeAdminHtml(value) {
+
+    return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* =========================================================
+   ESCAPE HTML ATTRIBUTE
+========================================================= */
+
+function escapeAdminAttribute(value) {
+
+    return escapeAdminHtml(value);
 
 }
 
@@ -2584,6 +3135,7 @@ function setupAdminQuestionGenerator() {
 ========================================================= */
 
 setupAdminQuestionGenerator();
+    
 // =========================================
 // INITIAL RENDER
 // =========================================
