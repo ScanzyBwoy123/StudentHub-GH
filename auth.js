@@ -2,23 +2,6 @@
    STUDENTHUB GH — SUPABASE AUTHENTICATION
 ========================================================= */
 
-const STUDENTHUB_SUPABASE_URL =
-    "https://gwosailuqdsvttebrhen.supabase.co";
-
-const STUDENTHUB_SUPABASE_KEY =
-    "sb_publishable_A4nPzz5JrfMRicGVcyErbQ_IAeJa9Gq";
-
-
-/* =========================================================
-   CREATE SUPABASE CLIENT
-========================================================= */
-
-const studentHubSupabase =
-    window.supabase.createClient(
-        STUDENTHUB_SUPABASE_URL,
-        STUDENTHUB_SUPABASE_KEY
-    );
-
 
 /* =========================================================
    SIGN UP
