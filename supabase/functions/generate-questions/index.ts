@@ -7,19 +7,69 @@ const SUPABASE_URL =
 const SUPABASE_SERVICE_ROLE_KEY =
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
+const GEMINI_API_KEY =
+  Deno.env.get("GEMINI_API_KEY");
+
 const GEMINI_MODEL =
-  "gemini-3.8-flash";
+  "gemini-3.1-flash-lite";
 
 const supabaseAdmin =
   createClient(
     SUPABASE_URL,
     SUPABASE_SERVICE_ROLE_KEY
   );
+
+const corsHeaders = {
+  "Content-Type": "application/json",
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods":
+    "POST, OPTIONS",
+  "Cache-Control": "no-store"
+};
+
 Deno.serve(async (req) => {
+
+  /*
+   * =====================================================
+   * CORS
+   * =====================================================
+   */
+
+  if (req.method === "OPTIONS") {
+    return new Response("ok", {
+      status: 204,
+      headers: corsHeaders
+    });
+  }
+
+  /*
+   * =====================================================
+   * METHOD CHECK
+   * =====================================================
+   */
+
+  if (req.method !== "POST") {
+    return new Response(
+      JSON.stringify({
+        error:
+          "Only POST requests are allowed."
+      }),
+      {
+        status: 405,
+        headers: corsHeaders
+      }
+    );
+  }
+
   try {
-        /* =====================================================
-       ADMIN AUTHENTICATION
-    ===================================================== */
+
+    /*
+     * =====================================================
+     * AUTHENTICATION
+     * =====================================================
+     */
 
     const authorization =
       req.headers.get("Authorization");
@@ -32,10 +82,7 @@ Deno.serve(async (req) => {
         }),
         {
           status: 401,
-          headers: {
-            "Content-Type":
-              "application/json"
-          }
+          headers: corsHeaders
         }
       );
     }
@@ -53,10 +100,7 @@ Deno.serve(async (req) => {
         }),
         {
           status: 401,
-          headers: {
-            "Content-Type":
-              "application/json"
-          }
+          headers: corsHeaders
         }
       );
     }
@@ -65,8 +109,9 @@ Deno.serve(async (req) => {
       data: userData,
       error: userError
     } =
-      await supabaseAdmin.auth
-        .getUser(token);
+      await supabaseAdmin.auth.getUser(
+        token
+      );
 
     if (
       userError ||
@@ -79,10 +124,7 @@ Deno.serve(async (req) => {
         }),
         {
           status: 401,
-          headers: {
-            "Content-Type":
-              "application/json"
-          }
+          headers: corsHeaders
         }
       );
     }
@@ -90,10 +132,11 @@ Deno.serve(async (req) => {
     const user =
       userData.user;
 
-
-    /* =====================================================
-       CHECK ADMIN ROLE
-    ===================================================== */
+    /*
+     * =====================================================
+     * ADMIN ROLE CHECK
+     * =====================================================
+     */
 
     const {
       data: profile,
@@ -106,6 +149,7 @@ Deno.serve(async (req) => {
         .maybeSingle();
 
     if (profileError) {
+
       console.error(
         "Profile lookup error:",
         profileError
@@ -118,10 +162,7 @@ Deno.serve(async (req) => {
         }),
         {
           status: 500,
-          headers: {
-            "Content-Type":
-              "application/json"
-          }
+          headers: corsHeaders
         }
       );
     }
@@ -130,6 +171,7 @@ Deno.serve(async (req) => {
       !profile ||
       profile.role !== "admin"
     ) {
+
       return new Response(
         JSON.stringify({
           error:
@@ -137,171 +179,358 @@ Deno.serve(async (req) => {
         }),
         {
           status: 403,
-          headers: {
-            "Content-Type":
-              "application/json"
-          }
-        }
-      );
-    }
-    const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods":
-    "POST, OPTIONS"
-};
-
-if (req.method === "OPTIONS") {
-  return new Response(
-    "ok",
-    {
-      status: 200,
-      headers: corsHeaders
-    }
-  );
-}
-    if (req.method !== "POST") {
-      return new Response(
-        JSON.stringify({
-          error: "Only POST requests are allowed."
-        }),
-        {
-          status: 405,
-          headers: {
-            "Content-Type": "application/json"
-          }
+          headers: corsHeaders
         }
       );
     }
 
-    const body = await req.json();
+    /*
+     * =====================================================
+     * READ REQUEST
+     * =====================================================
+     */
 
-    const subject = String(body.subject || "").trim();
-    const topic = String(body.topic || "General").trim();
-    const difficulty = String(
-      body.difficulty || "medium"
-    ).trim();
+    const body =
+      await req.json();
 
-    const count = Math.min(
-      Math.max(Number(body.count) || 10, 1),
-      50
-    );
+    const subject =
+      String(
+        body.subject || ""
+      ).trim();
+
+    const topic =
+      String(
+        body.topic || "General"
+      ).trim();
+
+    const difficulty =
+      String(
+        body.difficulty || "medium"
+      ).trim().toLowerCase();
+
+    const source =
+      String(
+        body.source || "StudentHub GH"
+      ).trim();
+
+    const school =
+      String(
+        body.school || ""
+      ).trim();
+
+    const academicYear =
+      String(
+        body.academic_year || ""
+      ).trim();
+
+    const requestedCount =
+      Number(body.count);
+
+    const count =
+      Number.isInteger(
+        requestedCount
+      )
+        ? Math.min(
+            Math.max(
+              requestedCount,
+              1
+            ),
+            50
+          )
+        : 10;
+
+    /*
+     * =====================================================
+     * VALIDATION
+     * =====================================================
+     */
 
     if (!subject) {
       return new Response(
         JSON.stringify({
-          error: "Subject is required."
+          error:
+            "Subject is required."
         }),
         {
           status: 400,
-          headers: {
-            "Content-Type": "application/json"
-          }
+          headers: corsHeaders
         }
       );
     }
 
-    const geminiApiKey =
-      Deno.env.get("GEMINI_API_KEY");
-
-    if (!geminiApiKey) {
+    if (
+      ![
+        "easy",
+        "medium",
+        "hard"
+      ].includes(difficulty)
+    ) {
       return new Response(
         JSON.stringify({
-          error: "Gemini API key is not configured."
+          error:
+            "Difficulty must be easy, medium, or hard."
+        }),
+        {
+          status: 400,
+          headers: corsHeaders
+        }
+      );
+    }
+
+    if (!GEMINI_API_KEY) {
+      return new Response(
+        JSON.stringify({
+          error:
+            "Gemini API key is not configured."
         }),
         {
           status: 500,
-          headers: {
-            "Content-Type": "application/json"
-          }
+          headers: corsHeaders
         }
       );
     }
 
+    /*
+     * =====================================================
+     * GEMINI PROMPT
+     * =====================================================
+     */
+
     const prompt = `
-You are an expert nursing education question writer
+You are a professional nursing question writer
 for StudentHub GH.
 
-Generate ${count} high-quality multiple-choice questions.
+Create exactly ${count} original, high-quality
+multiple-choice questions for nursing students.
 
-Subject: ${subject}
-Topic: ${topic}
-Difficulty: ${difficulty}
+SUBJECT:
+${subject}
 
-The questions are for nursing students preparing for
-school examinations, professional nursing examinations,
-and clinical knowledge assessments.
+TOPIC:
+${topic}
 
-Requirements:
+DIFFICULTY:
+${difficulty}
+
+SOURCE:
+${source}
+
+SCHOOL:
+${school || "Not specified"}
+
+ACADEMIC YEAR:
+${academicYear || "Not specified"}
+
+The questions should be useful for:
+
+- nursing school examinations
+- professional nursing examinations
+- clinical knowledge assessment
+- revision and exam preparation
+
+IMPORTANT REQUIREMENTS:
 
 1. Generate exactly ${count} questions.
-2. Each question must have exactly 4 options.
-3. Only ONE option must be correct.
-4. The correct answer must be the exact text of one option.
-5. Give a clear educational explanation.
-6. Avoid duplicate questions.
-7. Avoid ambiguous questions.
-8. Use medically and academically accurate information.
-9. Match the requested difficulty.
-10. Do not include markdown.
-11. Do not include any text outside the JSON.
-12. Do not number the questions.
 
-Return ONLY a JSON array using this structure:
+2. Every question must have exactly four options.
 
-[
-  {
-    "question": "Question text",
-    "options": [
-      "Option A",
-      "Option B",
-      "Option C",
-      "Option D"
-    ],
-    "answer": "Correct option text",
-    "explanation": "Clear educational explanation",
-    "topic": "${topic}"
-  }
-]
+3. Use exactly one correct answer.
+
+4. The correct answer must match exactly one
+   of the four options.
+
+5. Provide a clear educational explanation
+   for every question.
+
+6. Questions must be medically accurate.
+
+7. Questions must be academically appropriate
+   for nursing students.
+
+8. Match the requested difficulty.
+
+9. Avoid duplicate questions.
+
+10. Avoid questions that are almost identical.
+
+11. Avoid ambiguous wording.
+
+12. Avoid "all of the above" unless absolutely
+    necessary.
+
+13. Avoid "none of the above" unless absolutely
+    necessary.
+
+14. Do not invent dangerous or clinically false
+    information.
+
+15. Do not include markdown.
+
+16. Do not include numbering.
+
+17. Do not include commentary outside the JSON.
+
+18. Return valid JSON only.
+
+RETURN EXACTLY THIS STRUCTURE:
+
+{
+  "questions": [
+    {
+      "question": "Question text",
+      "option_a": "Option A",
+      "option_b": "Option B",
+      "option_c": "Option C",
+      "option_d": "Option D",
+      "correct_answer": "A",
+      "explanation": "Clear educational explanation."
+    }
+  ]
+}
 `;
 
-    const geminiResponse = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`,
-      {
-        method: "POST",
+    /*
+     * =====================================================
+     * GEMINI REQUEST
+     * =====================================================
+     */
 
-        headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": geminiApiKey
-        },
+    let geminiData: any = null;
 
-        body: JSON.stringify({
-          contents: [
+    let lastGeminiError =
+      "";
+
+    const maxAttempts = 3;
+
+    for (
+      let attempt = 1;
+      attempt <= maxAttempts;
+      attempt++
+    ) {
+
+      try {
+
+        const response =
+          await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`,
             {
-              role: "user",
-              parts: [
-                {
-                  text: prompt
+              method: "POST",
+
+              headers: {
+                "Content-Type":
+                  "application/json",
+                "x-goog-api-key":
+                  GEMINI_API_KEY
+              },
+
+              body: JSON.stringify({
+                systemInstruction: {
+                  parts: [
+                    {
+                      text:
+                        "You are a professional nursing question writer for StudentHub GH. Create accurate, educational, exam-quality nursing MCQs and follow the requested JSON structure exactly."
+                    }
+                  ]
+                },
+
+                contents: [
+                  {
+                    role: "user",
+                    parts: [
+                      {
+                        text: prompt
+                      }
+                    ]
+                  }
+                ],
+
+                generationConfig: {
+                  responseMimeType:
+                    "application/json",
+                  temperature: 0.7
                 }
-              ]
+              })
             }
-          ],
+          );
 
-          generationConfig: {
-            responseMimeType: "application/json"
+        if (!response.ok) {
+
+          const errorText =
+            await response.text();
+
+          lastGeminiError =
+            errorText;
+
+          console.error(
+            `Gemini attempt ${attempt} failed:`,
+            errorText
+          );
+
+          if (
+            [
+              408,
+              429,
+              500,
+              502,
+              503,
+              504
+            ].includes(
+              response.status
+            ) &&
+            attempt < maxAttempts
+          ) {
+
+            await new Promise(
+              (resolve) =>
+                setTimeout(
+                  resolve,
+                  1000 * attempt
+                )
+            );
+
+            continue;
           }
-        })
-      }
-    );
 
-    if (!geminiResponse.ok) {
-      const errorText =
-        await geminiResponse.text();
+          break;
+        }
+
+        geminiData =
+          await response.json();
+
+        break;
+
+      } catch (error) {
+
+        lastGeminiError =
+          error instanceof Error
+            ? error.message
+            : String(error);
+
+        console.error(
+          `Gemini attempt ${attempt} error:`,
+          error
+        );
+
+        if (
+          attempt < maxAttempts
+        ) {
+
+          await new Promise(
+            (resolve) =>
+              setTimeout(
+                resolve,
+                1000 * attempt
+              )
+          );
+        }
+      }
+    }
+
+    if (!geminiData) {
 
       console.error(
-        "Gemini API error:",
-        errorText
+        "Gemini failed after retries:",
+        lastGeminiError
       );
 
       return new Response(
@@ -311,21 +540,25 @@ Return ONLY a JSON array using this structure:
         }),
         {
           status: 502,
-          headers: {
-            "Content-Type": "application/json"
-          }
+          headers: corsHeaders
         }
       );
     }
 
-    const geminiData =
-      await geminiResponse.json();
+    /*
+     * =====================================================
+     * READ GEMINI RESPONSE
+     * =====================================================
+     */
 
     const generatedText =
-      geminiData?.candidates?.[0]
-        ?.content?.parts?.[0]?.text;
+      geminiData
+        ?.candidates?.[0]
+        ?.content?.parts?.[0]
+        ?.text;
 
     if (!generatedText) {
+
       return new Response(
         JSON.stringify({
           error:
@@ -333,20 +566,30 @@ Return ONLY a JSON array using this structure:
         }),
         {
           status: 502,
-          headers: {
-            "Content-Type": "application/json"
-          }
+          headers: corsHeaders
         }
       );
     }
 
-    let questions;
+    /*
+     * =====================================================
+     * PARSE JSON
+     * =====================================================
+     */
+
+    let parsedData: any;
 
     try {
-      questions = JSON.parse(generatedText);
-    } catch (parseError) {
+
+      parsedData =
+        JSON.parse(
+          generatedText
+        );
+
+    } catch (error) {
+
       console.error(
-        "Unable to parse Gemini JSON:",
+        "Gemini JSON parse error:",
         generatedText
       );
 
@@ -357,59 +600,155 @@ Return ONLY a JSON array using this structure:
         }),
         {
           status: 502,
-          headers: {
-            "Content-Type": "application/json"
-          }
+          headers: corsHeaders
         }
       );
     }
 
-    if (!Array.isArray(questions)) {
+    const questions =
+      parsedData?.questions;
+
+    if (
+      !Array.isArray(
+        questions
+      )
+    ) {
+
       return new Response(
         JSON.stringify({
           error:
-            "Gemini response was not a question array."
+            "Gemini response did not contain a valid question list."
         }),
         {
           status: 502,
-          headers: {
-            "Content-Type": "application/json"
-          }
+          headers: corsHeaders
         }
       );
     }
 
-    const validQuestions = questions
-      .filter((item) => {
-        return (
-          item &&
-          typeof item.question === "string" &&
-          Array.isArray(item.options) &&
-          item.options.length === 4 &&
-          item.options.every(
-            (option) =>
-              typeof option === "string"
-          ) &&
-          typeof item.answer === "string" &&
-          typeof item.explanation === "string"
-        );
-      })
-      .map((item) => ({
-        question: item.question.trim(),
+    /*
+     * =====================================================
+     * VALIDATE QUESTIONS
+     * =====================================================
+     */
 
-        options: item.options.map(
-          (option) => option.trim()
-        ),
+    const validQuestions =
+      questions
+        .filter((item: any) => {
 
-        answer: item.answer.trim(),
+          if (
+            !item ||
+            typeof item.question !==
+              "string"
+          ) {
+            return false;
+          }
 
-        explanation:
-          item.explanation.trim(),
+          const options = [
+            item.option_a,
+            item.option_b,
+            item.option_c,
+            item.option_d
+          ];
 
-        topic: topic
-      }));
+          if (
+            options.some(
+              (option) =>
+                typeof option !==
+                "string" ||
+                !option.trim()
+            )
+          ) {
+            return false;
+          }
 
-    if (validQuestions.length === 0) {
+          if (
+            ![
+              "A",
+              "B",
+              "C",
+              "D"
+            ].includes(
+              String(
+                item.correct_answer
+              ).trim().toUpperCase()
+            )
+          ) {
+            return false;
+          }
+
+          if (
+            typeof item.explanation !==
+            "string" ||
+            !item.explanation.trim()
+          ) {
+            return false;
+          }
+
+          return true;
+        })
+        .map((item: any) => {
+
+          const correctAnswer =
+            String(
+              item.correct_answer
+            )
+              .trim()
+              .toUpperCase();
+
+          const options = [
+            String(
+              item.option_a
+            ).trim(),
+
+            String(
+              item.option_b
+            ).trim(),
+
+            String(
+              item.option_c
+            ).trim(),
+
+            String(
+              item.option_d
+            ).trim()
+          ];
+
+          return {
+            question:
+              String(
+                item.question
+              ).trim(),
+
+            options,
+
+            answer:
+              options[
+                ["A", "B", "C", "D"]
+                  .indexOf(
+                    correctAnswer
+                  )
+              ],
+
+            explanation:
+              String(
+                item.explanation
+              ).trim(),
+
+            topic
+          };
+        });
+
+    /*
+     * =====================================================
+     * FINAL VALIDATION
+     * =====================================================
+     */
+
+    if (
+      validQuestions.length === 0
+    ) {
+
       return new Response(
         JSON.stringify({
           error:
@@ -417,12 +756,16 @@ Return ONLY a JSON array using this structure:
         }),
         {
           status: 502,
-          headers: {
-            "Content-Type": "application/json"
-          }
+          headers: corsHeaders
         }
       );
     }
+
+    /*
+     * =====================================================
+     * RETURN QUESTIONS
+     * =====================================================
+     */
 
     return new Response(
       JSON.stringify({
@@ -434,23 +777,30 @@ Return ONLY a JSON array using this structure:
 
         difficulty,
 
-        requestedCount: count,
+        source,
+
+        school,
+
+        academic_year:
+          academicYear,
+
+        requestedCount:
+          count,
 
         generatedCount:
           validQuestions.length,
 
-        questions: validQuestions
+        questions:
+          validQuestions
       }),
       {
         status: 200,
-
-        headers: {
-          "Content-Type": "application/json"
-        }
+        headers: corsHeaders
       }
     );
 
   } catch (error) {
+
     console.error(
       "Generate questions error:",
       error
@@ -463,10 +813,7 @@ Return ONLY a JSON array using this structure:
       }),
       {
         status: 500,
-
-        headers: {
-          "Content-Type": "application/json"
-        }
+        headers: corsHeaders
       }
     );
   }
