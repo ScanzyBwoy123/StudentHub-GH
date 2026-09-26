@@ -2680,30 +2680,28 @@ async function setupAdminQuestionGenerator() {
                 ====================================== */
 
                 if (
-                    typeof supabase === "undefined" ||
-                    !supabase.functions
-                ) {
+    typeof studentHubSupabase === "undefined" ||
+    !studentHubSupabase.functions
+) {
 
-                    throw new Error(
-                        "Supabase is not connected."
-                    );
+    throw new Error(
+        "Supabase is not connected."
+    );
 
-                }
+}
 
-
-                const { data, error } =
-                    await supabase.functions.invoke(
-                        "generate-questions",
-                        {
-                            body: {
-                                subject: subject,
-                                topic: topic,
-                                difficulty: difficulty,
-                                count: count
-                            }
-                        }
-                    );
-
+const { data, error } =
+    await studentHubSupabase.functions.invoke(
+        "generate-questions",
+        {
+            body: {
+                subject: subject,
+                topic: topic,
+                difficulty: difficulty,
+                count: count
+            }
+        }
+    );
 
                 if (error) {
 
