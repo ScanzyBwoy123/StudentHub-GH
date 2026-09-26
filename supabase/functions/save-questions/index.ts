@@ -1,11 +1,30 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
+
+/* =====================================================
+   CORS
+===================================================== */
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods":
+    "POST, OPTIONS"
+};
+
+
+/* =====================================================
+   SUPABASE CONFIG
+===================================================== */
+
 const SUPABASE_URL =
   Deno.env.get("SUPABASE_URL")!;
 
 const SUPABASE_SERVICE_ROLE_KEY =
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
 
 const supabaseAdmin =
   createClient(
@@ -14,13 +33,31 @@ const supabaseAdmin =
   );
 
 
+/* =====================================================
+   EDGE FUNCTION
+===================================================== */
+
 Deno.serve(async (req) => {
 
   try {
 
-    /* =====================================================
+    /* =================================================
+       CORS PREFLIGHT
+    ================================================= */
+
+    if (req.method === "OPTIONS") {
+
+      return new Response(null, {
+        status: 204,
+        headers: corsHeaders
+      });
+
+    }
+
+
+    /* =================================================
        METHOD CHECK
-    ===================================================== */
+    ================================================= */
 
     if (req.method !== "POST") {
 
@@ -32,6 +69,7 @@ Deno.serve(async (req) => {
         {
           status: 405,
           headers: {
+            ...corsHeaders,
             "Content-Type":
               "application/json"
           }
@@ -41,9 +79,9 @@ Deno.serve(async (req) => {
     }
 
 
-    /* =====================================================
+    /* =================================================
        AUTHORIZATION HEADER
-    ===================================================== */
+    ================================================= */
 
     const authorization =
       req.headers.get(
@@ -61,6 +99,7 @@ Deno.serve(async (req) => {
         {
           status: 401,
           headers: {
+            ...corsHeaders,
             "Content-Type":
               "application/json"
           }
@@ -71,10 +110,9 @@ Deno.serve(async (req) => {
 
 
     const token =
-      authorization.replace(
-        "Bearer ",
-        ""
-      ).trim();
+      authorization
+        .replace("Bearer ", "")
+        .trim();
 
 
     if (!token) {
@@ -87,6 +125,7 @@ Deno.serve(async (req) => {
         {
           status: 401,
           headers: {
+            ...corsHeaders,
             "Content-Type":
               "application/json"
           }
@@ -96,9 +135,9 @@ Deno.serve(async (req) => {
     }
 
 
-    /* =====================================================
+    /* =================================================
        VERIFY LOGGED-IN USER
-    ===================================================== */
+    ================================================= */
 
     const {
       data: userData,
@@ -121,6 +160,7 @@ Deno.serve(async (req) => {
         {
           status: 401,
           headers: {
+            ...corsHeaders,
             "Content-Type":
               "application/json"
           }
@@ -134,9 +174,9 @@ Deno.serve(async (req) => {
       userData.user;
 
 
-    /* =====================================================
+    /* =================================================
        VERIFY ADMIN ROLE
-    ===================================================== */
+    ================================================= */
 
     const {
       data: profile,
@@ -164,6 +204,7 @@ Deno.serve(async (req) => {
         {
           status: 500,
           headers: {
+            ...corsHeaders,
             "Content-Type":
               "application/json"
           }
@@ -186,6 +227,7 @@ Deno.serve(async (req) => {
         {
           status: 403,
           headers: {
+            ...corsHeaders,
             "Content-Type":
               "application/json"
           }
@@ -195,9 +237,9 @@ Deno.serve(async (req) => {
     }
 
 
-    /* =====================================================
+    /* =================================================
        READ REQUEST BODY
-    ===================================================== */
+    ================================================= */
 
     const body =
       await req.json();
@@ -233,9 +275,9 @@ Deno.serve(async (req) => {
       body.publish === true;
 
 
-    /* =====================================================
+    /* =================================================
        VALIDATE REQUEST
-    ===================================================== */
+    ================================================= */
 
     if (!subject) {
 
@@ -247,6 +289,7 @@ Deno.serve(async (req) => {
         {
           status: 400,
           headers: {
+            ...corsHeaders,
             "Content-Type":
               "application/json"
           }
@@ -266,6 +309,7 @@ Deno.serve(async (req) => {
         {
           status: 400,
           headers: {
+            ...corsHeaders,
             "Content-Type":
               "application/json"
           }
@@ -285,6 +329,7 @@ Deno.serve(async (req) => {
         {
           status: 400,
           headers: {
+            ...corsHeaders,
             "Content-Type":
               "application/json"
           }
@@ -294,9 +339,9 @@ Deno.serve(async (req) => {
     }
 
 
-    /* =====================================================
+    /* =================================================
        CLEAN QUESTIONS
-    ===================================================== */
+    ================================================= */
 
     const cleanedQuestions =
       questions.map(
@@ -364,9 +409,9 @@ Deno.serve(async (req) => {
       );
 
 
-    /* =====================================================
+    /* =================================================
        VALIDATE EACH QUESTION
-    ===================================================== */
+    ================================================= */
 
     for (
       const item
@@ -383,6 +428,7 @@ Deno.serve(async (req) => {
           {
             status: 400,
             headers: {
+              ...corsHeaders,
               "Content-Type":
                 "application/json"
             }
@@ -404,6 +450,7 @@ Deno.serve(async (req) => {
           {
             status: 400,
             headers: {
+              ...corsHeaders,
               "Content-Type":
                 "application/json"
             }
@@ -427,6 +474,7 @@ Deno.serve(async (req) => {
           {
             status: 400,
             headers: {
+              ...corsHeaders,
               "Content-Type":
                 "application/json"
             }
@@ -446,6 +494,7 @@ Deno.serve(async (req) => {
           {
             status: 400,
             headers: {
+              ...corsHeaders,
               "Content-Type":
                 "application/json"
             }
@@ -457,9 +506,9 @@ Deno.serve(async (req) => {
     }
 
 
-    /* =====================================================
+    /* =================================================
        SAVE TO QUESTION BANK
-    ===================================================== */
+    ================================================= */
 
     const {
       data: savedQuestions,
@@ -488,6 +537,7 @@ Deno.serve(async (req) => {
         {
           status: 500,
           headers: {
+            ...corsHeaders,
             "Content-Type":
               "application/json"
           }
@@ -497,9 +547,9 @@ Deno.serve(async (req) => {
     }
 
 
-    /* =====================================================
+    /* =================================================
        SUCCESS
-    ===================================================== */
+    ================================================= */
 
     return new Response(
       JSON.stringify({
@@ -521,6 +571,7 @@ Deno.serve(async (req) => {
         status: 200,
 
         headers: {
+          ...corsHeaders,
           "Content-Type":
             "application/json"
         }
@@ -546,6 +597,7 @@ Deno.serve(async (req) => {
         status: 500,
 
         headers: {
+          ...corsHeaders,
           "Content-Type":
             "application/json"
         }
