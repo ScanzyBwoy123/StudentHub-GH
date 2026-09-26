@@ -4226,3 +4226,225 @@ body {
     }
 
 }
+/* =========================================================
+   STUDENTHUB GH — ADMIN QUESTION REVIEW
+========================================================= */
+
+#admin .admin-review-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 22px;
+    padding: 22px;
+    border-radius: 20px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+}
+
+#admin .admin-review-header h3 {
+    margin: 5px 0 6px;
+    color: #0f172a;
+    font-size: 21px;
+}
+
+#admin .admin-review-header p {
+    margin: 0;
+    color: #64748b;
+    font-size: 14px;
+}
+
+#admin .admin-question-count {
+    flex-shrink: 0;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: #dbeafe;
+    color: #1d4ed8;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+
+/* QUESTION LIST */
+
+#admin .admin-question-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+
+/* QUESTION CARD */
+
+#admin .admin-question-card {
+    padding: 24px;
+    border-radius: 20px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+}
+
+#admin .admin-question-number {
+    display: inline-flex;
+    align-items: center;
+    min-height: 30px;
+    padding: 5px 10px;
+    margin-bottom: 18px;
+    border-radius: 9px;
+    background: #eff6ff;
+    color: #2563eb;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+
+/* FORM FIELDS */
+
+#admin .admin-question-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 18px;
+}
+
+#admin .admin-question-field label,
+#admin .admin-option-field label {
+    color: #334155;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+#admin .admin-question-text,
+#admin .admin-explanation-text,
+#admin .admin-option-input,
+#admin .admin-answer-select {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    background: #ffffff;
+    color: #0f172a;
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+#admin .admin-question-text,
+#admin .admin-explanation-text {
+    min-height: 92px;
+    padding: 12px 14px;
+    resize: vertical;
+    line-height: 1.55;
+}
+
+#admin .admin-option-input,
+#admin .admin-answer-select {
+    min-height: 46px;
+    padding: 10px 12px;
+}
+
+#admin .admin-question-text:focus,
+#admin .admin-explanation-text:focus,
+#admin .admin-option-input:focus,
+#admin .admin-answer-select:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.10);
+}
+
+
+/* OPTIONS */
+
+#admin .admin-options-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 15px;
+    margin-bottom: 18px;
+}
+
+#admin .admin-option-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+
+/* REVIEW ACTIONS */
+
+#admin .admin-review-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 22px;
+    border-top: 1px solid #e2e8f0;
+}
+
+#admin .admin-review-actions button {
+    min-height: 50px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 13px;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+#admin #saveAdminDraftQuestions {
+    background: #e2e8f0;
+    color: #334155;
+}
+
+#admin #publishAdminQuestions {
+    background: linear-gradient(
+        135deg,
+        #16a34a,
+        #15803d
+    );
+    color: #ffffff;
+    box-shadow: 0 10px 22px rgba(22, 163, 74, 0.18);
+}
+
+#admin .admin-review-actions button:hover {
+    transform: translateY(-2px);
+}
+
+#admin #publishAdminQuestions:hover {
+    box-shadow: 0 14px 28px rgba(22, 163, 74, 0.24);
+}
+
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+
+    #admin .admin-review-header {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 18px;
+    }
+
+    #admin .admin-question-card {
+        padding: 18px;
+        border-radius: 17px;
+    }
+
+    #admin .admin-options-grid {
+        grid-template-columns: 1fr;
+        gap: 13px;
+    }
+
+    #admin .admin-review-actions {
+        flex-direction: column;
+    }
+
+    #admin .admin-review-actions button {
+        width: 100%;
+    }
+
+}
