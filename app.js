@@ -2238,7 +2238,7 @@ function checkQuizAnswer(selectedAnswer) {
 // =========================================
 // QUIZ RESULT
 // =========================================
-function showQuizResult() {
+    function showQuizResult() {
 
     const area =
         document.getElementById(
@@ -2257,19 +2257,41 @@ function showQuizResult() {
             (currentQuizScore / total) * 100
         );
 
+    const incorrect =
+        total - currentQuizScore;
+
 
     let message =
-        "Keep practicing! 💪";
+        "Keep practicing!";
+
+    let subtitle =
+        "Every question you attempt helps you improve.";
+
+    let icon =
+        "📚";
 
     if (percentage >= 80) {
 
         message =
-            "Excellent work! 🎉";
+            "Excellent work!";
+
+        subtitle =
+            "You have shown a strong understanding of this topic.";
+
+        icon =
+            "🏆";
 
     } else if (percentage >= 60) {
 
         message =
-            "Good job! Keep improving. 👍";
+            "Good job!";
+
+        subtitle =
+            "You are making progress. Keep reviewing and improving.";
+
+        icon =
+            "👏";
+
     }
 
 
@@ -2288,22 +2310,22 @@ function showQuizResult() {
 
     history.push({
 
-    subject:
-        currentQuizSubject,
+        subject:
+            currentQuizSubject,
 
-    score:
-        currentQuizScore,
+        score:
+            currentQuizScore,
 
-    total:
-        total,
+        total:
+            total,
 
-    percentage:
-        percentage,
+        percentage:
+            percentage,
 
-    date:
-        new Date().toISOString()
+        date:
+            new Date().toISOString()
 
-});
+    });
 
 
     localStorage.setItem(
@@ -2312,53 +2334,216 @@ function showQuizResult() {
     );
 
 
+    /* =========================================
+       RESULT SCREEN
+    ========================================== */
+
     area.innerHTML = `
 
-        <div class="quiz-result">
+        <div class="quiz-result-screen">
 
-            <div class="quiz-result-icon">
-                🏆
+            <div class="quiz-result-hero">
+
+                <div class="quiz-result-icon">
+                    ${icon}
+                </div>
+
+                <span class="quiz-result-label">
+                    QUIZ COMPLETED
+                </span>
+
+                <h2>
+                    ${message}
+                </h2>
+
+                <p>
+                    ${subtitle}
+                </p>
+
             </div>
 
-            <h2>
-                ${message}
-            </h2>
 
-            <p>
-                You scored
-                <strong>
-                    ${currentQuizScore}
-                </strong>
-                out of
-                <strong>
-                    ${total}
-                </strong>
-            </p>
+            <div class="quiz-result-score-card">
 
-            <div class="quiz-score">
-                ${percentage}%
+                <div class="quiz-score-circle">
+
+                    <div>
+
+                        <strong>
+                            ${percentage}%
+                        </strong>
+
+                        <span>
+                            Score
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="quiz-result-subject">
+
+                    <span>
+                        Subject
+                    </span>
+
+                    <strong>
+                        ${escapeHTML(
+                            currentQuizSubject
+                        )}
+                    </strong>
+
+                </div>
+
             </div>
 
-            <button
-                class="primary-btn"
-                id="restartQuizBtn">
-                Try Again
-            </button>
+
+            <div class="quiz-result-stats">
+
+                <div class="quiz-result-stat">
+
+                    <span class="quiz-stat-icon">
+                        ✓
+                    </span>
+
+                    <strong>
+                        ${currentQuizScore}
+                    </strong>
+
+                    <small>
+                        Correct
+                    </small>
+
+                </div>
+
+
+                <div class="quiz-result-stat">
+
+                    <span class="quiz-stat-icon">
+                        ✕
+                    </span>
+
+                    <strong>
+                        ${incorrect}
+                    </strong>
+
+                    <small>
+                        Incorrect
+                    </small>
+
+                </div>
+
+
+                <div class="quiz-result-stat">
+
+                    <span class="quiz-stat-icon">
+                        #
+                    </span>
+
+                    <strong>
+                        ${total}
+                    </strong>
+
+                    <small>
+                        Questions
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <div class="quiz-result-actions">
+
+                <button
+                    class="primary-btn"
+                    id="restartQuizBtn">
+
+                    ↻ Try Again
+
+                </button>
+
+                <button
+                    class="quiz-result-secondary"
+                    id="quizResultBackBtn">
+
+                    ← Back to Subjects
+
+                </button>
+
+            </div>
 
         </div>
     `;
 
 
-    document
-    .getElementById(
-        "restartQuizBtn"
-    )
-    .addEventListener(
-        "click",
-        startQuiz
-    );
+    /* =========================================
+       TRY AGAIN
+    ========================================== */
 
-updateQuizPerformance();
+    const restartButton =
+        document.getElementById(
+            "restartQuizBtn"
+        );
+
+    if (restartButton) {
+
+        restartButton.addEventListener(
+            "click",
+            () => {
+
+                startQuiz(
+                    currentQuizSubject
+                );
+
+            }
+        );
+
+    }
+
+
+    /* =========================================
+       BACK TO SUBJECTS
+    ========================================== */
+
+    const backButton =
+        document.getElementById(
+            "quizResultBackBtn"
+        );
+
+    if (backButton) {
+
+        backButton.addEventListener(
+            "click",
+            () => {
+
+                const subjectGrid =
+                    document.querySelector(
+                        ".quiz-subject-grid"
+                    );
+
+                if (subjectGrid) {
+
+                    subjectGrid.style.display =
+                        "";
+
+                    subjectGrid.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start"
+                    });
+
+                }
+
+                area.innerHTML = "";
+
+            }
+        );
+
+    }
+
+
+    updateQuizPerformance();
 
 }
 /* =========================================
