@@ -1725,26 +1725,183 @@ createQuestion(
 ];
 
 
-function getQuizQuestions() {
+/* =========================================
+   SUPABASE QUESTION BANK LOADER
+========================================= */
 
-    const saved =
-        JSON.parse(
-            localStorage.getItem(QUIZ_KEY)
+let studentHubQuestionBank = [
+    ...defaultQuestions
+];
+
+
+/*
+ * Convert a Supabase question into the same
+ * format used by the existing quiz engine.
+ */
+function normalizeQuestionBankQuestion(question) {
+
+    return {
+
+        id: question.id,
+
+        subject:
+            question.subject ||
+            "General",
+
+        course:
+            question.subject ||
+            "General",
+
+        topic:
+            question.topic ||
+            "General",
+
+        difficulty:
+            question.difficulty ||
+            "Medium",
+
+        question:
+            question.question ||
+            "",
+
+        options:
+            Array.isArray(question.options)
+                ? question.options
+                : [],
+
+        answer:
+            question.answer ||
+            "",
+
+        explanation:
+            question.explanation ||
+            "No explanation is available."
+
+    };
+
+}
+
+
+/*
+ * Load published questions from Supabase.
+ *
+ * Only published questions are loaded.
+ *
+ * Premium questions are also loaded for now,
+ * but the subscription/paywall protection
+ * will be added in a later step.
+ */
+async function loadStudentHubQuestionBank() {
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await studentHubSupabase
+                .from("question_bank")
+                .select(
+                    "id, subject, topic, difficulty, question, options, answer, explanation, is_premium, published"
+                )
+                .eq("published", true)
+                .order("created_at", {
+                    ascending: false
+                });
+
+        if (error) {
+
+            console.error(
+                "Question bank loading error:",
+                error
+            );
+
+            /*
+             * Keep the existing questions if
+             * Supabase cannot be reached.
+             */
+            studentHubQuestionBank = [
+                ...defaultQuestions
+            ];
+
+            return studentHubQuestionBank;
+        }
+
+
+        const publishedQuestions =
+            Array.isArray(data)
+                ? data.map(
+                    normalizeQuestionBankQuestion
+                )
+                : [];
+
+
+        /*
+         * Keep the original built-in questions
+         * and add the published Supabase questions.
+         */
+        studentHubQuestionBank = [
+            ...defaultQuestions,
+            ...publishedQuestions
+        ];
+
+
+        /*
+         * Remove accidental duplicate IDs.
+         */
+        const uniqueQuestions =
+            Array.from(
+                new Map(
+                    studentHubQuestionBank.map(
+                        question => [
+                            String(question.id),
+                            question
+                        ]
+                    )
+                ).values()
+            );
+
+
+        studentHubQuestionBank =
+            uniqueQuestions;
+
+
+        console.log(
+            "StudentHub question bank loaded:",
+            publishedQuestions.length,
+            "published questions from Supabase."
         );
 
-    if (
-        saved &&
-        saved.length >= defaultQuestions.length
-    ) {
-        return saved;
+
+        return studentHubQuestionBank;
+
+    } catch (error) {
+
+        console.error(
+            "Unexpected question bank error:",
+            error
+        );
+
+        studentHubQuestionBank = [
+            ...defaultQuestions
+        ];
+
+        return studentHubQuestionBank;
     }
 
-    localStorage.setItem(
-        QUIZ_KEY,
-        JSON.stringify(defaultQuestions)
-    );
+}
 
-    return defaultQuestions;
+
+/*
+ * Return the currently loaded question bank.
+ *
+ * This keeps the existing quiz engine
+ * compatible with the new Supabase loader.
+ */
+async function renderQuiz() {
+
+    return studentHubQuestionBank;
+
 }
 
 let currentQuizQuestions = [];
@@ -1763,7 +1920,7 @@ let quizAnswered = false;
     if (!container) return;
 
     const questions =
-        getQuizQuestions();
+    await loadStudentHubQuestionBank();
 
     const subjectGrid =
         container.querySelector(
