@@ -1,6 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
-// StudentHub AI Question Generator
+const GEMINI_MODEL = "gemini-3.8-flash";
 
 Deno.serve(async (req) => {
   try {
@@ -20,9 +20,12 @@ Deno.serve(async (req) => {
 
     const body = await req.json();
 
-    const subject = body.subject;
-    const topic = body.topic || "General";
-    const difficulty = body.difficulty || "medium";
+    const subject = String(body.subject || "").trim();
+    const topic = String(body.topic || "General").trim();
+    const difficulty = String(
+      body.difficulty || "medium"
+    ).trim();
+
     const count = Math.min(
       Math.max(Number(body.count) || 10, 1),
       50
@@ -42,12 +45,13 @@ Deno.serve(async (req) => {
       );
     }
 
-    const aiApiKey = Deno.env.get("AI_API_KEY");
+    const geminiApiKey =
+      Deno.env.get("GEMINI_API_KEY");
 
-    if (!aiApiKey) {
+    if (!geminiApiKey) {
       return new Response(
         JSON.stringify({
-          error: "AI API key is not configured."
+          error: "Gemini API key is not configured."
         }),
         {
           status: 500,
@@ -59,7 +63,8 @@ Deno.serve(async (req) => {
     }
 
     const prompt = `
-You are an expert nursing education question writer.
+You are an expert nursing education question writer
+for StudentHub GH.
 
 Generate ${count} high-quality multiple-choice questions.
 
@@ -67,9 +72,26 @@ Subject: ${subject}
 Topic: ${topic}
 Difficulty: ${difficulty}
 
-Return ONLY valid JSON.
+The questions are for nursing students preparing for
+school examinations, professional nursing examinations,
+and clinical knowledge assessments.
 
-Use exactly this structure:
+Requirements:
+
+1. Generate exactly ${count} questions.
+2. Each question must have exactly 4 options.
+3. Only ONE option must be correct.
+4. The correct answer must be the exact text of one option.
+5. Give a clear educational explanation.
+6. Avoid duplicate questions.
+7. Avoid ambiguous questions.
+8. Use medically and academically accurate information.
+9. Match the requested difficulty.
+10. Do not include markdown.
+11. Do not include any text outside the JSON.
+12. Do not number the questions.
+
+Return ONLY a JSON array using this structure:
 
 [
   {
@@ -85,33 +107,186 @@ Use exactly this structure:
     "topic": "${topic}"
   }
 ]
-
-Requirements:
-- Exactly 4 options.
-- Only one correct answer.
-- Questions must be educationally accurate.
-- Avoid duplicate questions.
-- No markdown.
-- No text outside the JSON array.
 `;
 
-    /*
-      AI provider connection will be added next.
-      The secret API key stays on the server.
-    */
+    const geminiResponse = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`,
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": geminiApiKey
+        },
+
+        body: JSON.stringify({
+          contents: [
+            {
+              role: "user",
+              parts: [
+                {
+                  text: prompt
+                }
+              ]
+            }
+          ],
+
+          generationConfig: {
+            responseMimeType: "application/json"
+          }
+        })
+      }
+    );
+
+    if (!geminiResponse.ok) {
+      const errorText =
+        await geminiResponse.text();
+
+      console.error(
+        "Gemini API error:",
+        errorText
+      );
+
+      return new Response(
+        JSON.stringify({
+          error:
+            "Gemini failed to generate questions."
+        }),
+        {
+          status: 502,
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      );
+    }
+
+    const geminiData =
+      await geminiResponse.json();
+
+    const generatedText =
+      geminiData?.candidates?.[0]
+        ?.content?.parts?.[0]?.text;
+
+    if (!generatedText) {
+      return new Response(
+        JSON.stringify({
+          error:
+            "Gemini returned an empty response."
+        }),
+        {
+          status: 502,
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      );
+    }
+
+    let questions;
+
+    try {
+      questions = JSON.parse(generatedText);
+    } catch (parseError) {
+      console.error(
+        "Unable to parse Gemini JSON:",
+        generatedText
+      );
+
+      return new Response(
+        JSON.stringify({
+          error:
+            "Gemini returned invalid question data."
+        }),
+        {
+          status: 502,
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      );
+    }
+
+    if (!Array.isArray(questions)) {
+      return new Response(
+        JSON.stringify({
+          error:
+            "Gemini response was not a question array."
+        }),
+        {
+          status: 502,
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      );
+    }
+
+    const validQuestions = questions
+      .filter((item) => {
+        return (
+          item &&
+          typeof item.question === "string" &&
+          Array.isArray(item.options) &&
+          item.options.length === 4 &&
+          item.options.every(
+            (option) =>
+              typeof option === "string"
+          ) &&
+          typeof item.answer === "string" &&
+          typeof item.explanation === "string"
+        );
+      })
+      .map((item) => ({
+        question: item.question.trim(),
+
+        options: item.options.map(
+          (option) => option.trim()
+        ),
+
+        answer: item.answer.trim(),
+
+        explanation:
+          item.explanation.trim(),
+
+        topic: topic
+      }));
+
+    if (validQuestions.length === 0) {
+      return new Response(
+        JSON.stringify({
+          error:
+            "No valid questions were generated."
+        }),
+        {
+          status: 502,
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      );
+    }
 
     return new Response(
       JSON.stringify({
         success: true,
-        message: "Question generation request received.",
+
         subject,
+
         topic,
+
         difficulty,
-        count,
-        prompt
+
+        requestedCount: count,
+
+        generatedCount:
+          validQuestions.length,
+
+        questions: validQuestions
       }),
       {
         status: 200,
+
         headers: {
           "Content-Type": "application/json"
         }
@@ -119,12 +294,19 @@ Requirements:
     );
 
   } catch (error) {
+    console.error(
+      "Generate questions error:",
+      error
+    );
+
     return new Response(
       JSON.stringify({
-        error: "Unable to process question request."
+        error:
+          "Unable to generate questions."
       }),
       {
         status: 500,
+
         headers: {
           "Content-Type": "application/json"
         }
