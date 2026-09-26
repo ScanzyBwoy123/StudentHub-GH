@@ -1017,7 +1017,36 @@ button {
 
         justify-content: space-between;
     }
+.mobile-header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
 
+.mobile-menu-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 44px;
+    height: 44px;
+
+    border: none;
+    border-radius: 12px;
+
+    background: var(--primary-light);
+    color: var(--primary);
+
+    font-size: 24px;
+
+    cursor: pointer;
+
+    flex-shrink: 0;
+}
+
+.mobile-menu-button:active {
+    transform: scale(0.96);
+}
     .mobile-brand {
         display: block;
     }
