@@ -1,4 +1,4 @@
-name: Deploy Supabase Edge Function
+name: Deploy Supabase Edge Functions
 
 on:
   push:
@@ -26,4 +26,11 @@ jobs:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
         run: |
           supabase functions deploy generate-questions \
+            --project-ref gwosailuqdsvttebrhen
+
+      - name: Deploy save-questions
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          supabase functions deploy save-questions \
             --project-ref gwosailuqdsvttebrhen
