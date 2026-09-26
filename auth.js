@@ -21,9 +21,14 @@ async function studentHubSignUp(
             password: password,
 
             options: {
+
+                emailRedirectTo:
+                    "https://scanzybwoy123.github.io/StudentHub-GH/login.html",
+
                 data: {
                     full_name: fullName
                 }
+
             }
 
         });
@@ -37,7 +42,6 @@ async function studentHubSignUp(
     return data;
 
 }
-
 
 /* =========================================================
    SIGN IN
