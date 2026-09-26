@@ -1801,104 +1801,111 @@ let quizAnswered = false;
 // =========================================
 // START QUIZ
 // =========================================
-
 function startQuiz(subject = "All Subjects") {
 
     currentQuizSubject = subject;
 
-    let questions =
-        getQuizQuestions();
+    let questions = getQuizQuestions();
 
-
-    /* =========================================
-       FILTER QUESTIONS BY SUBJECT
-    ========================================= */
-
+    // Filter by selected subject
     if (subject !== "All Subjects") {
+        questions = questions.filter(question => {
+            const questionSubject =
+                question.subject ||
+                question.course ||
+                "";
 
-        questions =
-            questions.filter(
-                question => {
-
-                    const questionSubject =
-                        question.subject ||
-                        question.course ||
-                        "";
-
-                    return (
-                        questionSubject === subject
-                    );
-
-                }
-            );
-
+            return questionSubject === subject;
+        });
     }
 
-
-    /* =========================================
-       CHECK QUESTION AVAILABILITY
-    ========================================= */
-
+    // No questions available
     if (questions.length === 0) {
-
         alert(
             `No questions are available for ${subject} yet.`
         );
-
         return;
-
     }
 
+    // Randomize and limit quiz
+    currentQuizQuestions = [...questions]
+        .sort(() => Math.random() - 0.5)
+        .slice(0, Math.min(10, questions.length));
 
-    /* =========================================
-       RANDOMIZE QUESTIONS
-    ========================================= */
-
-    currentQuizQuestions =
-        [...questions]
-            .sort(
-                () =>
-                    Math.random() - 0.5
-            )
-            .slice(
-                0,
-                Math.min(
-                    10,
-                    questions.length
-                )
-            );
-
-
-    /* =========================================
-       RESET QUIZ
-    ========================================= */
-
+    // Reset quiz
     currentQuizIndex = 0;
-
     currentQuizScore = 0;
-
     quizAnswered = false;
 
+    // Hide subject selection
+    const subjectGrid =
+        document.querySelector(".quiz-subject-grid");
 
-    /* =========================================
-       SHOW FIRST QUESTION
-    ========================================= */
+    if (subjectGrid) {
+        subjectGrid.style.display = "none";
+    }
 
-    showQuizQuestion();
-
-setTimeout(() => {
-    const quizArea = document.getElementById("quizArea");
+    // Show a back button
+    const quizArea =
+        document.getElementById("quizArea");
 
     if (quizArea) {
-        quizArea.scrollIntoView({
-            behavior: "smooth",
-            block: "start"
-        });
+
+        quizArea.innerHTML = `
+            <button
+                type="button"
+                class="quiz-back-subjects"
+                id="quizBackToSubjects">
+
+                ← Back to Subjects
+
+            </button>
+        `;
+
+        const backButton =
+            document.getElementById(
+                "quizBackToSubjects"
+            );
+
+        if (backButton) {
+            backButton.addEventListener(
+                "click",
+                () => {
+
+                    subjectGrid.style.display = "";
+
+                    quizArea.innerHTML = "";
+
+                    subjectGrid.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start"
+                    });
+
+                }
+            );
+        }
     }
-}, 100);
 
+    // Show the first question
+    showQuizQuestion();
+
+    // Bring the question directly into view
+    setTimeout(() => {
+
+        const questionCard =
+            document.querySelector(
+                "#quizArea .quiz-card"
+            );
+
+        if (questionCard) {
+            questionCard.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+        }
+
+    }, 100);
 }
-
 // =========================================
 // SHOW QUESTION
 // =========================================
