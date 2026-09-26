@@ -2674,69 +2674,111 @@ async function setupAdminQuestionGenerator() {
 
 
             try {
+/* =====================================
+   CALL SUPABASE EDGE FUNCTION
+====================================== */
 
-                /* =====================================
-                   CALL SUPABASE EDGE FUNCTION
-                ====================================== */
+const {
+    data: sessionData,
+    error: sessionError
+} = await studentHubSupabase.auth.getSession();
 
-                if (
-    typeof studentHubSupabase === "undefined" ||
-    !studentHubSupabase.functions
-) {
-
-    throw new Error(
-        "Supabase is not connected."
+if (sessionError) {
+    console.error(
+        "Session error:",
+        sessionError
     );
 
+    throw new Error(
+        "Unable to get your login session."
+    );
 }
 
-const { data, error } =
-    await studentHubSupabase.functions.invoke(
-        "generate-questions",
+const accessToken =
+    sessionData?.session?.access_token;
+
+if (!accessToken) {
+    throw new Error(
+        "Your login session has expired. Please log in again."
+    );
+}
+
+const response =
+    await fetch(
+        "https://gwosailuqdsvttebrhen.supabase.co/functions/v1/generate-questions",
         {
-            body: {
+            method: "POST",
+
+            headers: {
+                "Content-Type":
+                    "application/json",
+
+                "Authorization":
+                    `Bearer ${accessToken}`,
+
+                "apikey":
+                    SUPABASE_PUBLISHABLE_KEY
+            },
+
+            body: JSON.stringify({
                 subject: subject,
                 topic: topic,
                 difficulty: difficulty,
                 count: count
-            }
+            })
         }
     );
 
-                if (error) {
+let data;
 
-                    console.error(
-                        "Question generation error:",
-                        error
-                    );
+try {
+    data =
+        await response.json();
+} catch (jsonError) {
 
-                    throw new Error(
-                        error.message ||
-                        "Unable to contact the question generator."
-                    );
+    console.error(
+        "Invalid Edge Function response:",
+        jsonError
+    );
 
-                }
+    throw new Error(
+        "The question generator returned an invalid response."
+    );
+}
 
+if (!response.ok) {
 
-                if (
-                    !data ||
-                    !Array.isArray(data.questions)
-                ) {
+    console.error(
+        "Question generation failed:",
+        data
+    );
 
-                    throw new Error(
-                        "Gemini returned an invalid question response."
-                    );
+    throw new Error(
+        data?.error ||
+        `Question generation failed (${response.status}).`
+    );
+}
 
-                }
+if (
+    !data ||
+    !Array.isArray(
+        data.questions
+    )
+) {
 
+    throw new Error(
+        "Gemini returned an invalid question response."
+    );
+}
 
-                if (data.questions.length === 0) {
+if (
+    data.questions.length === 0
+) {
 
-                    throw new Error(
-                        "No questions were generated."
-                    );
-
-                }
+    throw new Error(
+        "No questions were generated."
+    );
+}
 
 
                 /* =====================================
