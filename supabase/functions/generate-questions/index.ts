@@ -1,9 +1,149 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from "jsr:@supabase/supabase-js@2";
 
-const GEMINI_MODEL = "gemini-3.8-flash";
+const SUPABASE_URL =
+  Deno.env.get("SUPABASE_URL")!;
 
+const SUPABASE_SERVICE_ROLE_KEY =
+  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
+const GEMINI_MODEL =
+  "gemini-3.8-flash";
+
+const supabaseAdmin =
+  createClient(
+    SUPABASE_URL,
+    SUPABASE_SERVICE_ROLE_KEY
+  );
 Deno.serve(async (req) => {
   try {
+        /* =====================================================
+       ADMIN AUTHENTICATION
+    ===================================================== */
+
+    const authorization =
+      req.headers.get("Authorization");
+
+    if (!authorization) {
+      return new Response(
+        JSON.stringify({
+          error:
+            "Authentication is required."
+        }),
+        {
+          status: 401,
+          headers: {
+            "Content-Type":
+              "application/json"
+          }
+        }
+      );
+    }
+
+    const token =
+      authorization
+        .replace(/^Bearer\s+/i, "")
+        .trim();
+
+    if (!token) {
+      return new Response(
+        JSON.stringify({
+          error:
+            "Invalid authentication token."
+        }),
+        {
+          status: 401,
+          headers: {
+            "Content-Type":
+              "application/json"
+          }
+        }
+      );
+    }
+
+    const {
+      data: userData,
+      error: userError
+    } =
+      await supabaseAdmin.auth
+        .getUser(token);
+
+    if (
+      userError ||
+      !userData?.user
+    ) {
+      return new Response(
+        JSON.stringify({
+          error:
+            "Invalid or expired authentication."
+        }),
+        {
+          status: 401,
+          headers: {
+            "Content-Type":
+              "application/json"
+          }
+        }
+      );
+    }
+
+    const user =
+      userData.user;
+
+
+    /* =====================================================
+       CHECK ADMIN ROLE
+    ===================================================== */
+
+    const {
+      data: profile,
+      error: profileError
+    } =
+      await supabaseAdmin
+        .from("student_profiles")
+        .select("role")
+        .eq("id", user.id)
+        .maybeSingle();
+
+    if (profileError) {
+      console.error(
+        "Profile lookup error:",
+        profileError
+      );
+
+      return new Response(
+        JSON.stringify({
+          error:
+            "Unable to verify administrator permissions."
+        }),
+        {
+          status: 500,
+          headers: {
+            "Content-Type":
+              "application/json"
+          }
+        }
+      );
+    }
+
+    if (
+      !profile ||
+      profile.role !== "admin"
+    ) {
+      return new Response(
+        JSON.stringify({
+          error:
+            "Administrator permission required."
+        }),
+        {
+          status: 403,
+          headers: {
+            "Content-Type":
+              "application/json"
+          }
+        }
+      );
+    }
     if (req.method !== "POST") {
       return new Response(
         JSON.stringify({
