@@ -2475,6 +2475,115 @@ function updateQuizPerformance() {
         }
 
     }
+    /* =========================================================
+   STUDENTHUB GH — ADMIN QUESTION GENERATOR
+========================================================= */
+
+function setupAdminQuestionGenerator() {
+
+    const generateButton =
+        document.getElementById(
+            "generateAdminQuestions"
+        );
+
+    if (!generateButton) {
+        return;
+    }
+
+    generateButton.addEventListener(
+        "click",
+        function () {
+
+            const subject =
+                document.getElementById(
+                    "adminQuestionSubject"
+                )?.value.trim();
+
+            const topic =
+                document.getElementById(
+                    "adminQuestionTopic"
+                )?.value.trim();
+
+            const difficulty =
+                document.getElementById(
+                    "adminQuestionDifficulty"
+                )?.value;
+
+            const count =
+                document.getElementById(
+                    "adminQuestionCount"
+                )?.value;
+
+            const output =
+                document.getElementById(
+                    "adminGeneratedQuestions"
+                );
+
+
+            if (!subject) {
+
+                alert(
+                    "Please select a subject first."
+                );
+
+                return;
+            }
+
+
+            if (!topic) {
+
+                alert(
+                    "Please enter a topic first."
+                );
+
+                return;
+            }
+
+
+            if (!output) {
+                return;
+            }
+
+
+            output.innerHTML = `
+
+                <div class="admin-empty-state">
+
+                    <div>
+                        🤖
+                    </div>
+
+                    <h3>
+                        Question request prepared
+                    </h3>
+
+                    <p>
+                        ${subject} —
+                        ${topic} —
+                        ${difficulty} —
+                        ${count} questions
+                    </p>
+
+                    <p>
+                        AI generation will be connected
+                        in the next step.
+                    </p>
+
+                </div>
+
+            `;
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   START ADMIN FEATURES
+========================================================= */
+
+setupAdminQuestionGenerator();
 // =========================================
 // INITIAL RENDER
 // =========================================
