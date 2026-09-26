@@ -2949,7 +2949,6 @@ function renderAdminGeneratedQuestions(
 
 }
 
-
 /* =========================================================
    ADMIN REVIEW ACTIONS
 ========================================================= */
@@ -2967,13 +2966,7 @@ function setupAdminReviewActions() {
         );
 
 
-    /* =====================================================
-       SAVE QUESTIONS
-    ===================================================== */
-
-    async function saveQuestions(
-        publish
-    ) {
+    async function saveQuestions(publish) {
 
         const questions =
             collectAdminReviewedQuestions();
@@ -2989,13 +2982,8 @@ function setupAdminReviewActions() {
             );
 
             return;
-
         }
 
-
-        /* =================================================
-           GET QUESTION METADATA
-        ================================================= */
 
         const meta =
             window.studentHubGeneratedQuestionMeta ||
@@ -3017,10 +3005,6 @@ function setupAdminReviewActions() {
             "medium";
 
 
-        /* =================================================
-           BUTTON LOADING STATE
-        ================================================= */
-
         const button =
             publish
                 ? publishButton
@@ -3041,10 +3025,6 @@ function setupAdminReviewActions() {
 
         try {
 
-            /* =============================================
-               CHECK SUPABASE
-            ============================================= */
-
             if (
                 typeof supabase === "undefined" ||
                 !supabase.functions
@@ -3057,10 +3037,6 @@ function setupAdminReviewActions() {
             }
 
 
-            /* =============================================
-               SAVE THROUGH SECURE EDGE FUNCTION
-            ============================================= */
-
             const {
                 data,
                 error
@@ -3068,7 +3044,6 @@ function setupAdminReviewActions() {
                 await supabase.functions.invoke(
                     "save-questions",
                     {
-
                         body: {
 
                             subject:
@@ -3087,14 +3062,9 @@ function setupAdminReviewActions() {
                                 publish
 
                         }
-
                     }
                 );
 
-
-            /* =============================================
-               HANDLE ERROR
-            ============================================= */
 
             if (error) {
 
@@ -3123,10 +3093,6 @@ function setupAdminReviewActions() {
 
             }
 
-
-            /* =============================================
-               SUCCESS
-            ============================================= */
 
             window.studentHubGeneratedQuestions =
                 data.questions ||
@@ -3172,10 +3138,6 @@ function setupAdminReviewActions() {
     }
 
 
-    /* =====================================================
-       SAVE AS DRAFT
-    ===================================================== */
-
     if (draftButton) {
 
         draftButton.addEventListener(
@@ -3189,10 +3151,6 @@ function setupAdminReviewActions() {
 
     }
 
-
-    /* =====================================================
-       PUBLISH QUESTIONS
-    ===================================================== */
 
     if (publishButton) {
 
@@ -3208,66 +3166,6 @@ function setupAdminReviewActions() {
     }
 
 }
-    const draftButton =
-        document.getElementById(
-            "saveAdminDraftQuestions"
-        );
-
-    const publishButton =
-        document.getElementById(
-            "publishAdminQuestions"
-        );
-
-
-    if (draftButton) {
-
-        draftButton.addEventListener(
-            "click",
-            function () {
-
-                const questions =
-                    collectAdminReviewedQuestions();
-
-
-                window.studentHubGeneratedQuestions =
-                    questions;
-
-
-                alert(
-                    `${questions.length} questions are ready to be saved as drafts.`
-                );
-
-            }
-        );
-
-    }
-
-
-    if (publishButton) {
-
-        publishButton.addEventListener(
-            "click",
-            function () {
-
-                const questions =
-                    collectAdminReviewedQuestions();
-
-
-                window.studentHubGeneratedQuestions =
-                    questions;
-
-
-                alert(
-                    `${questions.length} questions are ready to be published.`
-                );
-
-            }
-        );
-
-    }
-
-}
-
 
 /* =========================================================
    COLLECT REVIEWED QUESTIONS
