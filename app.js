@@ -2967,6 +2967,258 @@ function setupAdminReviewActions() {
         );
 
 
+    /* =====================================================
+       SAVE QUESTIONS
+    ===================================================== */
+
+    async function saveQuestions(
+        publish
+    ) {
+
+        const questions =
+            collectAdminReviewedQuestions();
+
+
+        if (
+            !questions ||
+            questions.length === 0
+        ) {
+
+            alert(
+                "There are no questions to save."
+            );
+
+            return;
+
+        }
+
+
+        /* =================================================
+           GET QUESTION METADATA
+        ================================================= */
+
+        const meta =
+            window.studentHubGeneratedQuestionMeta ||
+            {};
+
+
+        const subject =
+            meta.subject ||
+            "General";
+
+
+        const topic =
+            meta.topic ||
+            "General";
+
+
+        const difficulty =
+            meta.difficulty ||
+            "medium";
+
+
+        /* =================================================
+           BUTTON LOADING STATE
+        ================================================= */
+
+        const button =
+            publish
+                ? publishButton
+                : draftButton;
+
+
+        if (button) {
+
+            button.disabled = true;
+
+            button.textContent =
+                publish
+                    ? "🚀 Publishing..."
+                    : "💾 Saving...";
+
+        }
+
+
+        try {
+
+            /* =============================================
+               CHECK SUPABASE
+            ============================================= */
+
+            if (
+                typeof supabase === "undefined" ||
+                !supabase.functions
+            ) {
+
+                throw new Error(
+                    "Supabase is not connected."
+                );
+
+            }
+
+
+            /* =============================================
+               SAVE THROUGH SECURE EDGE FUNCTION
+            ============================================= */
+
+            const {
+                data,
+                error
+            } =
+                await supabase.functions.invoke(
+                    "save-questions",
+                    {
+
+                        body: {
+
+                            subject:
+                                subject,
+
+                            topic:
+                                topic,
+
+                            difficulty:
+                                difficulty,
+
+                            questions:
+                                questions,
+
+                            publish:
+                                publish
+
+                        }
+
+                    }
+                );
+
+
+            /* =============================================
+               HANDLE ERROR
+            ============================================= */
+
+            if (error) {
+
+                console.error(
+                    "Save questions error:",
+                    error
+                );
+
+                throw new Error(
+                    error.message ||
+                    "Unable to save questions."
+                );
+
+            }
+
+
+            if (
+                !data ||
+                data.success !== true
+            ) {
+
+                throw new Error(
+                    data?.error ||
+                    "Questions could not be saved."
+                );
+
+            }
+
+
+            /* =============================================
+               SUCCESS
+            ============================================= */
+
+            window.studentHubGeneratedQuestions =
+                data.questions ||
+                questions;
+
+
+            alert(
+                publish
+                    ? `${data.savedCount || questions.length} questions published successfully.`
+                    : `${data.savedCount || questions.length} questions saved as drafts successfully.`
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "StudentHub question save error:",
+                error
+            );
+
+
+            alert(
+                error.message ||
+                "Something went wrong while saving the questions."
+            );
+
+
+        } finally {
+
+            if (button) {
+
+                button.disabled = false;
+
+                button.textContent =
+                    publish
+                        ? "🚀 Publish Questions"
+                        : "💾 Save as Draft";
+
+            }
+
+        }
+
+    }
+
+
+    /* =====================================================
+       SAVE AS DRAFT
+    ===================================================== */
+
+    if (draftButton) {
+
+        draftButton.addEventListener(
+            "click",
+            function () {
+
+                saveQuestions(false);
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       PUBLISH QUESTIONS
+    ===================================================== */
+
+    if (publishButton) {
+
+        publishButton.addEventListener(
+            "click",
+            function () {
+
+                saveQuestions(true);
+
+            }
+        );
+
+    }
+
+}
+    const draftButton =
+        document.getElementById(
+            "saveAdminDraftQuestions"
+        );
+
+    const publishButton =
+        document.getElementById(
+            "publishAdminQuestions"
+        );
+
+
     if (draftButton) {
 
         draftButton.addEventListener(
