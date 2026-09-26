@@ -135,6 +135,13 @@
                     <span>📖</span>
                     My Notes
                 </button>
+                <button
+    class="nav-item"
+    data-page="admin"
+>
+    <span>⚙️</span>
+    Admin
+</button>
 
             </nav>
 
@@ -1664,7 +1671,273 @@
                 </div>
 
             </section>
+            </section>
 
+
+            <!-- =========================================
+                 ADMIN DASHBOARD
+            ========================================== -->
+
+            <section
+                class="page"
+                id="admin"
+            >
+
+                <div class="dashboard-card">
+
+                    <div class="card-header">
+
+                        <div>
+
+                            <span class="section-label">
+                                ADMINISTRATION
+                            </span>
+
+                            <h2>
+                                Question Manager
+                            </h2>
+
+                            <p>
+                                Generate, review and publish questions
+                                for StudentHub learners.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="admin-generator-card">
+
+                        <div class="admin-generator-header">
+
+                            <div class="admin-generator-icon">
+                                🤖
+                            </div>
+
+                            <div>
+
+                                <h3>
+                                    AI Question Generator
+                                </h3>
+
+                                <p>
+                                    Create exam-style questions for
+                                    students to practice.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="admin-form-grid">
+
+                            <div class="form-group">
+
+                                <label for="adminQuestionSubject">
+                                    Subject
+                                </label>
+
+                                <select id="adminQuestionSubject">
+
+                                    <option value="">
+                                        Select subject
+                                    </option>
+
+                                    <option>
+                                        Anatomy &amp; Physiology
+                                    </option>
+
+                                    <option>
+                                        Microbiology
+                                    </option>
+
+                                    <option>
+                                        Basic Nursing
+                                    </option>
+
+                                    <option>
+                                        Fundamentals of Nursing
+                                    </option>
+
+                                    <option>
+                                        Nursing Process
+                                    </option>
+
+                                    <option>
+                                        Pharmacology
+                                    </option>
+
+                                    <option>
+                                        Medical Nursing
+                                    </option>
+
+                                    <option>
+                                        Medicine
+                                    </option>
+
+                                    <option>
+                                        Surgery
+                                    </option>
+
+                                    <option>
+                                        Midwifery
+                                    </option>
+
+                                    <option>
+                                        Paediatric Nursing
+                                    </option>
+
+                                    <option>
+                                        Community Health Nursing
+                                    </option>
+
+                                    <option>
+                                        Mental Health / Psychiatric Nursing
+                                    </option>
+
+                                    <option>
+                                        Nursing Informatics
+                                    </option>
+
+                                    <option>
+                                        Nursing Ethics
+                                    </option>
+
+                                    <option>
+                                        Research Methods
+                                    </option>
+
+                                    <option>
+                                        Statistics / Biostatistics
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="adminQuestionTopic">
+                                    Topic
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="adminQuestionTopic"
+                                    placeholder="e.g. Skeletal System"
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="adminQuestionDifficulty">
+                                    Difficulty
+                                </label>
+
+                                <select id="adminQuestionDifficulty">
+
+                                    <option value="easy">
+                                        Easy
+                                    </option>
+
+                                    <option
+                                        value="medium"
+                                        selected
+                                    >
+                                        Medium
+                                    </option>
+
+                                    <option value="hard">
+                                        Hard
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="adminQuestionCount">
+                                    Number of Questions
+                                </label>
+
+                                <select id="adminQuestionCount">
+
+                                    <option value="5">
+                                        5 Questions
+                                    </option>
+
+                                    <option
+                                        value="10"
+                                        selected
+                                    >
+                                        10 Questions
+                                    </option>
+
+                                    <option value="20">
+                                        20 Questions
+                                    </option>
+
+                                    <option value="50">
+                                        50 Questions
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+
+                        <button
+                            type="button"
+                            class="primary-btn"
+                            id="generateAdminQuestions"
+                        >
+                            🤖 Generate Questions
+                        </button>
+
+                    </div>
+
+
+                    <div
+                        id="adminGeneratedQuestions"
+                        class="admin-generated-questions"
+                    >
+
+                        <div class="admin-empty-state">
+
+                            <div>
+                                📝
+                            </div>
+
+                            <h3>
+                                No questions generated yet
+                            </h3>
+
+                            <p>
+                                Choose a subject and topic above,
+                                then generate questions.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+        </main>
+
+    </div>
 
         </main>
 
