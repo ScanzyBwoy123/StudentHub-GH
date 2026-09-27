@@ -2045,15 +2045,24 @@ let quizAnswered = false;
 // =========================================
 // START QUIZ
 // =========================================
-function startQuiz(subject = "All Subjects") {
+async function startQuiz(subject = "All Subjects") {
 
     currentQuizSubject = subject;
 
-    let questions = getQuizQuestions();
+    // Make sure the latest published questions
+    // are loaded from Supabase before starting.
+    const questionsFromSupabase =
+        await loadStudentHubQuestionBank();
+
+    let questions = [
+        ...questionsFromSupabase
+    ];
 
     // Filter by selected subject
     if (subject !== "All Subjects") {
+
         questions = questions.filter(question => {
+
             const questionSubject =
                 question.subject ||
                 question.course ||
@@ -2065,16 +2074,22 @@ function startQuiz(subject = "All Subjects") {
 
     // No questions available
     if (questions.length === 0) {
+
         alert(
             `No questions are available for ${subject} yet.`
         );
+
         return;
     }
 
     // Randomize and limit quiz
-    currentQuizQuestions = [...questions]
-        .sort(() => Math.random() - 0.5)
-        .slice(0, Math.min(10, questions.length));
+    currentQuizQuestions =
+        [...questions]
+            .sort(() => Math.random() - 0.5)
+            .slice(
+                0,
+                Math.min(10, questions.length)
+            );
 
     // Reset quiz
     currentQuizIndex = 0;
@@ -2083,13 +2098,15 @@ function startQuiz(subject = "All Subjects") {
 
     // Hide subject selection
     const subjectGrid =
-        document.querySelector(".quiz-subject-grid");
+        document.querySelector(
+            ".quiz-subject-grid"
+        );
 
     if (subjectGrid) {
         subjectGrid.style.display = "none";
     }
 
-    // Show a back button
+    // Show quiz area
     const quizArea =
         document.getElementById("quizArea");
 
@@ -2112,18 +2129,23 @@ function startQuiz(subject = "All Subjects") {
             );
 
         if (backButton) {
+
             backButton.addEventListener(
                 "click",
                 () => {
 
-                    subjectGrid.style.display = "";
+                    if (subjectGrid) {
+                        subjectGrid.style.display = "";
+                    }
 
                     quizArea.innerHTML = "";
 
-                    subjectGrid.scrollIntoView({
-                        behavior: "smooth",
-                        block: "start"
-                    });
+                    if (subjectGrid) {
+                        subjectGrid.scrollIntoView({
+                            behavior: "smooth",
+                            block: "start"
+                        });
+                    }
 
                 }
             );
@@ -2133,7 +2155,7 @@ function startQuiz(subject = "All Subjects") {
     // Show the first question
     showQuizQuestion();
 
-    // Bring the question directly into view
+    // Bring the question into view
     setTimeout(() => {
 
         const questionCard =
@@ -2142,10 +2164,12 @@ function startQuiz(subject = "All Subjects") {
             );
 
         if (questionCard) {
+
             questionCard.scrollIntoView({
                 behavior: "smooth",
                 block: "start"
             });
+
         }
 
     }, 100);
