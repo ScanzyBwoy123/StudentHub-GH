@@ -1898,11 +1898,6 @@ async function loadStudentHubQuestionBank() {
  * This keeps the existing quiz engine
  * compatible with the new Supabase loader.
  */
-async function renderQuiz() {
-
-    return studentHubQuestionBank;
-
-}
 
 let currentQuizQuestions = [];
 let currentQuizIndex = 0;
@@ -1912,7 +1907,7 @@ let quizAnswered = false;
 // =========================================
 // RENDER QUIZ PAGE
 // =========================================
-    function renderQuiz() {
+    async function renderQuiz() {
 
     const container =
         document.getElementById("quiz");
